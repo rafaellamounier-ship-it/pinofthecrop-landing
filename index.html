@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pin of the Crop — Seus salvos, finalmente organizados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #1F1930;
+      --bg2:     #261E3A;
+      --bg3:     #2E2448;
+      --creme:   #EDE6E3;
+      --creme2:  #C8BFB9;
+      --yellow:  #F3C43A;
+      --pink:    #F07A8F;
+      --border:  rgba(237,230,227,0.08);
+      --card-bg: rgba(255,255,255,0.04);
+
+      --filme:   #F5A623;
+      --receita: #E8634A;
+      --lugar:   #5B8A6F;
+      --livro:   #4A6FA5;
+      --musica:  #F97316;
+      --achado:  #EC4899;
+      --outro:   #64748B;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--creme);
+      font-family: 'Poppins', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .5;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(31,25,48,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { text-decoration: none; display: flex; align-items: center; }
+    .nav-logo img { height: 28px; width: auto; display: block; }
+    .nav-cta {
+      background: var(--yellow); color: var(--bg);
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
+      padding: 10px 22px; border-radius: 100px; border: none;
+      cursor: pointer; text-decoration: none;
+      transition: opacity .2s, transform .15s;
+    }
+    .nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 24px 80px;
+      position: relative;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(243,196,58,0.12);
+      border: 1px solid rgba(243,196,58,0.25);
+      color: var(--yellow); font-size: 12px; font-weight: 600;
+      letter-spacing: .8px; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 100px; margin-bottom: 32px;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(52px, 8vw, 96px);
+      line-height: 1.05; letter-spacing: -2px;
+      max-width: 800px; margin-bottom: 28px;
+    }
+    .hero h1 em { font-style: italic; color: var(--pink); }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px); font-weight: 400;
+      color: var(--creme2); max-width: 480px;
+      line-height: 1.65; margin-bottom: 44px;
+    }
+    .hero-sub strong { color: var(--creme); font-weight: 600; }
+    .hero-actions {
+      display: flex; gap: 14px;
+      align-items: center; flex-wrap: wrap; justify-content: center;
+    }
+
+    /* BUTTONS */
+    .btn-primary {
+      background: var(--yellow); color: var(--bg);
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 15px;
+      padding: 16px 32px; border-radius: 100px; border: none;
+      cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn-primary:hover { opacity: .88; transform: translateY(-2px); }
+    .btn-ghost {
+      color: var(--creme2); font-size: 14px; font-weight: 500;
+      text-decoration: none; display: inline-flex;
+      align-items: center; gap: 6px; transition: color .2s;
+    }
+    .btn-ghost:hover { color: var(--creme); }
+
+    /* floating bubbles */
+    .hero-floats { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .float-bubble {
+      position: absolute; border-radius: 100px;
+      padding: 8px 16px; font-size: 13px; font-weight: 600;
+      white-space: nowrap; opacity: .18;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0)     rotate(var(--rot)); opacity: .18; }
+      50%  { opacity: .28; }
+      100% { transform: translateY(-120vh) rotate(var(--rot)); opacity: 0; }
+    }
+
+    /* ─── SECTION BASE ─── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+    .section-label {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--yellow); margin-bottom: 16px;
+    }
+
+    /* ─── PROBLEM ─── */
+    .problem {
+      padding: 120px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .problem-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .problem h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(36px, 4vw, 54px);
+      line-height: 1.15; letter-spacing: -1px; margin-bottom: 28px;
+    }
+    .problem h2 em { font-style: italic; color: var(--pink); }
+    .problem p { font-size: 16px; line-height: 1.75; color: var(--creme2); margin-bottom: 16px; }
+    .problem p strong { color: var(--creme); font-weight: 600; }
+    .saved-chaos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .chaos-thumb {
+      aspect-ratio: 9/16; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; opacity: .6; position: relative; overflow: hidden;
+    }
+    .chaos-thumb::after {
+      content: '🔖'; position: absolute;
+      top: 6px; right: 6px; font-size: 13px;
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .how { padding: 120px 0; }
+    .how-header { text-align: center; margin-bottom: 72px; }
+    .how-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(36px, 4vw, 54px);
+      letter-spacing: -1px; line-height: 1.15;
+    }
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; margin-bottom: 80px;
+    }
+    .step {
+      padding: 40px 32px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      position: relative; transition: background .2s;
+    }
+    .step:first-child { border-radius: 20px 0 0 20px; }
+    .step:last-child  { border-radius: 0 20px 20px 0; }
+    .step:hover { background: rgba(255,255,255,0.07); }
+    .step-num {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--yellow); margin-bottom: 20px; display: block;
+    }
+    .step-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+    .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--creme); }
+    .step p { font-size: 14px; line-height: 1.65; color: var(--creme2); }
+
+    /* ─── DEMO ─── */
+    .demo-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 24px; padding: 48px;
+      max-width: 640px; margin: 0 auto;
+    }
+    .demo-box h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px; letter-spacing: -.5px; margin-bottom: 8px;
+    }
+    .demo-box > p { font-size: 14px; color: var(--creme2); margin-bottom: 28px; line-height: 1.6; }
+    .demo-uses { display: flex; align-items: center; gap: 6px; margin-bottom: 24px; }
+    .use-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--yellow); transition: background .3s;
+    }
+    .use-dot.used { background: rgba(237,230,227,0.15); }
+    .demo-uses span { font-size: 12px; font-weight: 500; color: var(--creme2); margin-left: 4px; }
+    .demo-input-row { display: flex; gap: 10px; }
+    .demo-input {
+      flex: 1; background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 18px; font-family: 'Poppins', sans-serif;
+      font-size: 14px; color: var(--creme); outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .demo-input::placeholder { color: rgba(237,230,227,0.3); }
+    .demo-input:focus { border-color: rgba(243,196,58,0.4); background: rgba(255,255,255,0.09); }
+    .demo-btn {
+      background: var(--yellow); color: var(--bg);
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px;
+      padding: 14px 24px; border-radius: 12px; border: none;
+      cursor: pointer; white-space: nowrap;
+      transition: opacity .2s, transform .15s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .demo-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .demo-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .demo-result { margin-top: 28px; }
+
+    /* skeleton */
+    .skeleton { border-radius: 16px; border: 1px solid var(--border); background: var(--card-bg); padding: 24px; }
+    .skel-line {
+      height: 12px; border-radius: 6px;
+      background: rgba(237,230,227,0.08); margin-bottom: 10px;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    .skel-line.short  { width: 40%; }
+    .skel-line.medium { width: 65%; }
+    .skel-line.full   { width: 100%; }
+    .skel-line.title  { height: 20px; width: 70%; margin-bottom: 16px; }
+    .skel-line.badge  { height: 24px; width: 80px; border-radius: 100px; margin-bottom: 20px; }
+    @keyframes pulse {
+      0%, 100% { opacity: .5; }
+      50%       { opacity: 1; }
+    }
+
+    /* result card */
+    .result-card {
+      border-radius: 16px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05); padding: 24px;
+      animation: cardIn .4s cubic-bezier(.22,.68,0,1.2) forwards;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .card-category-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 100px;
+      font-size: 12px; font-weight: 700; margin-bottom: 16px;
+    }
+    .card-title { font-size: 20px; font-weight: 700; color: var(--creme); margin-bottom: 10px; line-height: 1.3; }
+    .card-summary { font-size: 14px; line-height: 1.7; color: var(--creme2); margin-bottom: 20px; }
+    .card-meta {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      padding-top: 16px; border-top: 1px solid var(--border);
+    }
+    .card-meta span { font-size: 12px; color: var(--creme2); display: flex; align-items: center; gap: 5px; }
+
+    /* exhausted */
+    .demo-exhausted {
+      background: rgba(240,122,143,0.08);
+      border: 1px solid rgba(240,122,143,0.2);
+      border-radius: 12px; padding: 20px 24px; text-align: center;
+      animation: cardIn .3s ease forwards;
+    }
+    .demo-exhausted p { font-size: 14px; color: var(--creme2); margin-bottom: 14px; line-height: 1.6; }
+    .demo-exhausted strong { color: var(--creme); }
+
+    /* ─── SOLUTION (problem + categories merged) ─── */
+    .solution {
+      padding: 120px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+    }
+    .solution-header { text-align: center; margin-bottom: 64px; }
+    .solution-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(36px, 4vw, 54px);
+      letter-spacing: -1px; margin-bottom: 16px; line-height: 1.1;
+    }
+    .solution-header h2 em { font-style: italic; color: var(--pink); }
+    .solution-header p { font-size: 17px; color: var(--creme2); max-width: 520px; margin: 0 auto; line-height: 1.65; }
+
+    /* grid */
+    .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .cat-card {
+      padding: 28px 24px; border-radius: 18px;
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      cursor: default;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: box-shadow .3s;
+    }
+    /* Filmes: 2 colunas, linha 1 */
+    .cat-card:nth-child(1) { grid-column: span 2; }
+    /* Locais: 1 coluna mas 2 linhas — card alto na direita */
+    .cat-card:nth-child(3) { grid-row: span 2; }
+    /* Layout final:
+       [Filmes x2] [Receitas] [Locais (alto)]
+       [Livros] [Músicas] [Achadinhos] [Locais cont.]
+    */
+
+    /* inner glow layer */
+    .cat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+    .cat-card:hover::before { opacity: 1; }
+
+    .cat-card-inner {
+      position: relative;
+      z-index: 1;
+      transform: translateZ(18px);
+    }
+
+    .cat-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 100px;
+      font-size: 11px; font-weight: 800;
+      letter-spacing: .5px; text-transform: uppercase;
+      margin-bottom: 18px;
+      border: 1px solid currentColor;
+    }
+    .cat-emoji { font-size: 13px; }
+    .cat-soon {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 14px;
+      background: rgba(243,196,58,.07);
+      border: 1px dashed rgba(243,196,58,.28);
+      border-radius: 14px;
+      padding: 18px 24px;
+      font-size: 14px;
+      color: var(--creme2);
+      line-height: 1.6;
+      width: 100%;
+    }
+    .cat-soon strong { color: var(--yellow); font-weight: 700; }
+    .cat-name { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--creme); }
+    .cat-example { font-size: 13px; color: var(--creme2); line-height: 1.6; }
+
+    /* ─── PROOF ─── */
+    .proof { padding: 120px 0; overflow: hidden; }
+    .proof-header { text-align: center; margin-bottom: 60px; }
+    .proof-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(32px, 3.5vw, 48px); letter-spacing: -1px;
+    }
+
+    .proof-track-wrap {
+      position: relative;
+      /* fade nas bordas */
+      mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .proof-track {
+      display: flex; gap: 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 40px 10vw;
+      scrollbar-width: none;
+      cursor: grab;
+      user-select: none;
+    }
+    .proof-track:active { cursor: grabbing; }
+    .proof-track::-webkit-scrollbar { display: none; }
+
+    .proof-card {
+      flex: 0 0 260px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 24px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transform-origin: center bottom;
+      transition: transform .15s ease, opacity .15s ease;
+      will-change: transform, opacity;
+    }
+    .proof-text {
+      font-size: 14px; line-height: 1.75; color: var(--creme);
+      margin-bottom: 20px; font-style: italic;
+      font-family: 'DM Serif Display', serif;
+    }
+    .proof-author { display: flex; align-items: center; gap: 12px; }
+    .proof-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 800; color: #fff;
+    }
+    .proof-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .proof-name { font-size: 13px; font-weight: 700; color: var(--creme); }
+    .proof-location { font-size: 11px; color: var(--creme2); }
+
+    .proof-scroll-hint {
+      text-align: center; margin-top: 16px;
+      font-size: 11px; color: var(--creme2); letter-spacing: .6px; opacity: .6;
+    }
+
+    /* ─── MOCKUP ─── */
+    .mockup-section {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .mockup-header { margin-bottom: 64px; }
+    .mockup-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(34px, 4vw, 52px);
+      letter-spacing: -1px; line-height: 1.1; margin-bottom: 12px;
+    }
+    .mockup-header h2 em { font-style: italic; color: var(--pink); }
+    .mockup-header p { font-size: 16px; color: var(--creme2); }
+    .mockup-wrap { display: flex; justify-content: center; align-items: center; gap: 48px; }
+    .phone-frame {
+      width: 260px; height: 540px;
+      background: #0D0A18;
+      border-radius: 44px;
+      border: 5px solid #2E2448;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.06),
+        0 40px 80px rgba(0,0,0,.6),
+        0 0 60px rgba(243,196,58,.06);
+      position: relative; overflow: hidden;
+      transform: perspective(1000px) rotateX(6deg) rotateY(-14deg) rotateZ(2deg);
+      transition: transform .4s ease;
+    }
+    .phone-frame:hover {
+      transform: perspective(1000px) rotateX(2deg) rotateY(-6deg) rotateZ(0.5deg);
+    }
+    .phone-notch {
+      width: 96px; height: 26px;
+      background: #0D0A18;
+      border-radius: 0 0 16px 16px;
+      position: absolute; top: 0; left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      border: 1px solid #2E2448; border-top: none;
+    }
+    .phone-screen {
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #1F1930 0%, #261E3A 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+    }
+    .phone-placeholder-icon { font-size: 40px; }
+    .phone-placeholder-text {
+      font-size: 13px; font-weight: 600; color: rgba(237,230,227,.5);
+    }
+    .phone-placeholder-sub {
+      font-size: 11px; color: rgba(237,230,227,.25);
+    }
+    .mockup-video-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+    }
+    /* quando tiver vídeo real: substitua .phone-screen por <video autoplay muted loop playsinline> */
+
+    /* ─── CTA FINAL ─── */
+    .cta-final {
+      padding: 140px 0; text-align: center;
+      background: var(--bg2); border-top: 1px solid var(--border);
+    }
+    .cta-final h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(40px, 5vw, 72px);
+      letter-spacing: -2px; line-height: 1.1; margin-bottom: 20px;
+    }
+    .cta-final h2 em { color: var(--yellow); font-style: italic; }
+    .cta-final p { font-size: 17px; color: var(--creme2); margin-bottom: 44px; }
+    .cta-badges { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .cta-info-row { display: flex; align-items: center; gap: 16px; }
+    .badge-info { font-size: 13px; color: var(--creme2); display: flex; align-items: center; gap: 6px; }
+    .badge-info + .badge-info::before { content: '·'; margin-right: 4px; }
+
+    /* ─── FOOTER ─── */
+    .footer-inner {
+      max-width: 1120px; margin: 0 auto;
+      padding: 40px 32px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo img { height: 18px; width: auto; opacity: .65; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--creme2); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--creme); }
+
+    /* ─── REVEAL ─── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .container { padding: 0 20px; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .cat-card:nth-child(1) { grid-column: span 2; }
+      .steps { grid-template-columns: 1fr; gap: 0; }
+      .step:first-child { border-radius: 20px 20px 0 0; }
+      .step:last-child  { border-radius: 0 0 20px 20px; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .cat-card:nth-child(1) { grid-column: span 2; }
+      .proof-grid { grid-template-columns: 1fr; }
+      .demo-box { padding: 28px 20px; }
+      .demo-input-row { flex-direction: column; }
+      .demo-btn { width: 100%; justify-content: center; }
+      .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+    }
+
+    /* ─── DEMO ERROR ─── */
+    .demo-error {
+      padding: 16px 20px; border-radius: 12px;
+      background: rgba(240,122,143,.1); border: 1px solid rgba(240,122,143,.3);
+      color: #F07A8F; font-size: 14px; line-height: 1.5;
+    }
+    .demo-real-badge {
+      margin-top: 12px; font-size: 11px;
+      color: rgba(237,230,227,.35); text-align: right;
+    }
+
+    /* ─── PRO SECTION ─── */
+    .pro-section {
+      padding: 120px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .pro-inner {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 80px;
+      align-items: center;
+    }
+    .pro-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(40px, 5vw, 68px);
+      letter-spacing: -2px; line-height: 1.05;
+      margin: 12px 0 20px;
+    }
+    .pro-em {
+      color: var(--yellow); font-style: italic;
+    }
+    .pro-sub { font-size: 18px; color: var(--creme2); margin-bottom: 40px; }
+    .pro-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .pro-list li {
+      font-size: 15px; color: var(--creme2);
+      padding-left: 20px; position: relative; line-height: 1.5;
+    }
+    .pro-list li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--yellow); font-weight: 700;
+    }
+    .pro-card-price {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(243,196,58,.25);
+      border-radius: 24px;
+      padding: 44px 36px;
+      text-align: center;
+    }
+    .pro-card-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--yellow);
+      margin-bottom: 28px;
+    }
+    .pro-price-block {
+      display: flex; align-items: baseline;
+      justify-content: center; gap: 4px;
+      margin-bottom: 20px;
+    }
+    .pro-currency { font-size: 22px; font-weight: 700; color: var(--creme2); }
+    .pro-amount {
+      font-size: 72px; font-weight: 800;
+      color: var(--creme); letter-spacing: -4px; line-height: 1;
+    }
+    .pro-period { font-size: 18px; color: var(--creme2); align-self: flex-end; padding-bottom: 10px; }
+    .pro-card-note {
+      font-size: 13px; color: var(--creme2); opacity: .6;
+      line-height: 1.6; margin-bottom: 32px;
+    }
+    .btn-pro {
+      display: block; width: 100%;
+      padding: 15px 24px; border-radius: 100px;
+      background: var(--yellow);
+      color: #1F1930; font-weight: 700; font-size: 15px;
+      text-decoration: none; text-align: center;
+      transition: opacity .2s, transform .2s;
+    }
+    .btn-pro:hover { opacity: .88; transform: translateY(-1px); }
+    @media (max-width: 900px) {
+      .pro-inner { grid-template-columns: 1fr; gap: 48px; }
+      .pro-card-price { max-width: 420px; margin: 0 auto; }
+    }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 14px; color: var(--creme2); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--creme); }
+    @media (max-width: 640px) { .nav-links { display: none; } }
+
+    /* ─── EMAIL CAPTURE ─── */
+    .email-capture-section {
+      padding: 120px 0;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+    .email-capture-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .email-capture-text h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(36px, 4vw, 56px);
+      letter-spacing: -2px; line-height: 1.1;
+      margin: 12px 0 16px;
+    }
+    .email-capture-text p { font-size: 17px; color: var(--creme2); line-height: 1.6; }
+    .email-form-wrap {
+      display: flex; gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      overflow: hidden;
+      background: rgba(255,255,255,.04);
+      transition: border-color .2s;
+    }
+    .email-form-wrap:focus-within { border-color: rgba(243,196,58,.5); }
+    .email-input {
+      flex: 1; background: none; border: none; outline: none;
+      padding: 16px 24px; font-size: 15px;
+      color: var(--creme); font-family: 'Poppins', sans-serif;
+    }
+    .email-input::placeholder { color: rgba(237,230,227,.35); }
+    .email-submit {
+      background: var(--yellow); border: none; cursor: pointer;
+      padding: 14px 28px; font-size: 14px; font-weight: 700;
+      color: #1F1930; font-family: 'Poppins', sans-serif;
+      border-radius: 100px; margin: 4px;
+      transition: opacity .2s;
+    }
+    .email-submit:hover { opacity: .88; }
+    .email-submit:disabled { opacity: .5; cursor: not-allowed; }
+    .email-feedback {
+      margin-top: 14px; padding: 14px 18px;
+      border-radius: 12px; font-size: 14px; line-height: 1.5;
+    }
+    .email-feedback.success {
+      background: rgba(91,138,111,.15);
+      border: 1px solid rgba(91,138,111,.3);
+      color: #7BC4A0;
+    }
+    .email-feedback.error {
+      background: rgba(240,122,143,.1);
+      border: 1px solid rgba(240,122,143,.3);
+      color: #F07A8F;
+    }
+    .email-privacy { font-size: 12px; color: rgba(237,230,227,.35); margin-top: 14px; }
+    @media (max-width: 768px) {
+      .email-capture-inner { grid-template-columns: 1fr; gap: 40px; }
+      .email-form-wrap { flex-direction: column; border-radius: 16px; }
+      .email-submit { border-radius: 12px; margin: 0 4px 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="#"><img src="logo.png" alt="Pin of the Crop" /></a>
+    <div class="nav-links">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#pro">PRO</a>
+      <a href="#email-capture">Lista de espera</a>
+    </div>
+    <a class="nav-cta" href="https://play.google.com/store/apps/details?id=com.pinofthecrop.app" target="_blank">Baixar grátis</a>
+  </nav>
+
+  <div class="hero-floats" id="floats"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="hero-eyebrow">📋 Agora disponível no Android</span>
+    <h1>Você salva tudo.<br><em>Não usa nada.</em></h1>
+    <p class="hero-sub">
+      Cole qualquer link do Instagram ou TikTok.
+      A IA analisa e cria um <strong>card organizado por categoria</strong> — pronto pra você usar de verdade.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="https://play.google.com/store/apps/details?id=com.pinofthecrop.app" target="_blank">↓ Baixar grátis</a>
+      <a class="btn-ghost" href="#demo">Ver funcionando →</a>
+    </div>
+  </section>
+
+  <!-- SOLUTION (problem + categories merged) -->
+
+
+  <!-- HOW + DEMO -->
+  <div id="como-funciona"></div>
+  <section class="how" id="demo">
+    <div class="container">
+      <div class="how-header reveal">
+        <span class="section-label">Como funciona</span>
+        <h2>Três segundos.<br>Zero esforço.</h2>
+      </div>
+      <div class="steps reveal">
+        <div class="step">
+          <span class="step-num">01</span>
+          <span class="step-icon">🔗</span>
+          <h3>Cole o link</h3>
+          <p>Qualquer vídeo do Instagram Reels ou TikTok. Só copiar e colar.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <span class="step-icon">✨</span>
+          <h3>A IA analisa</h3>
+          <p>Assiste ao vídeo, entende o conteúdo e extrai o que importa.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <span class="step-icon">📋</span>
+          <h3>Card pronto</h3>
+          <p>Categoria certa, resumo limpo, informações organizadas.</p>
+        </div>
+      </div>
+
+      <!-- DEMO BOX -->
+      <div class="demo-box reveal">
+        <h3>Experimente agora</h3>
+        <p>Cole um link de Reels ou TikTok e veja o que a IA extrai. Sem precisar baixar nada.</p>
+        <div class="demo-uses">
+          <div class="use-dot" id="dot1"></div>
+          <div class="use-dot" id="dot2"></div>
+          <span id="uses-label">2 análises gratuitas disponíveis</span>
+        </div>
+        <div class="demo-input-row">
+          <input class="demo-input" id="demo-url" type="url" placeholder="https://www.instagram.com/reel/..." />
+          <button class="demo-btn" id="demo-btn">
+            <span id="btn-text">Analisar</span>
+          </button>
+        </div>
+        <div class="demo-result" id="demo-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="solution">
+    <div class="container">
+      <div class="solution-header reveal">
+        <span class="section-label">Enquanto o Instagram te deixa afogar nos salvos</span>
+        <h2>Cada coisa<br>no seu <em>lugar.</em></h2>
+        <p>Cole um link. A IA detecta o que é e cria um card na categoria certa — sem você fazer nada.</p>
+      </div>
+      <div class="cat-grid reveal" id="cat-grid">
+
+        <!-- 1: Filmes — span 2 cols -->
+        <div class="cat-card" style="background:linear-gradient(135deg,rgba(245,166,35,.16),rgba(245,166,35,.05));border-color:rgba(245,166,35,.28);">
+          <div class="cat-card-inner">
+            <div class="cat-pill" style="background:rgba(245,166,35,.15);color:#F5A623;border-color:rgba(245,166,35,.4)"><span class="cat-emoji">🎬</span> Filme</div>
+            <div class="cat-name">Filmes &amp; Séries</div>
+            <div class="cat-example">Título, nota, ano e gênero — tudo extraído do vídeo. Com link direto para os principais streamings.</div>
+          </div>
+        </div>
+
+        <!-- 2: Receitas — col 3, linha 1 -->
+        <div class="cat-card" style="background:linear-gradient(135deg,rgba(232,99,74,.16),rgba(232,99,74,.05));border-color:rgba(232,99,74,.28);">
+          <div class="cat-card-inner">
+            <div class="cat-pill" style="background:rgba(232,99,74,.15);color:#E8634A;border-color:rgba(232,99,74,.4)"><span class="cat-emoji">🍳</span> Receita</div>
+            <div class="cat-name">Receitas</div>
+            <div class="cat-example">Ingredientes e modo de preparo resumidos diretamente do vídeo, sem você precisar pausar.</div>
+          </div>
+        </div>
+
+        <!-- 3: Locais — col 4, span 2 linhas (card alto) -->
+        <div class="cat-card" style="background:linear-gradient(135deg,rgba(91,138,111,.16),rgba(91,138,111,.05));border-color:rgba(91,138,111,.28);">
+          <div class="cat-card-inner">
+            <div class="cat-pill" style="background:rgba(91,138,111,.15);color:#5B8A6F;border-color:rgba(91,138,111,.4)"><span class="cat-emoji">📍</span> Local</div>
+            <div class="cat-name">Locais</div>
+            <div class="cat-example">Restaurante, café, hotel ou qualquer lugar. Um toque e abre direto no mapa — com endereço e rota.</div>
+          </div>
+        </div>
+
+        <!-- 4: Livros — col 1, linha 2 -->
+        <div class="cat-card" style="background:linear-gradient(135deg,rgba(74,111,165,.16),rgba(74,111,165,.05));border-color:rgba(74,111,165,.28);">
+          <div class="cat-card-inner">
+            <div class="cat-pill" style="background:rgba(74,111,165,.15);color:#4A6FA5;border-color:rgba(74,111,165,.4)"><span class="cat-emoji">📚</span> Livro</div>
+            <div class="cat-name">Livros</div>
+            <div class="cat-example">Perfil completo com título, autor, sinopse e link direto para compra.</div>
+          </div>
+        </div>
+
+        <!-- 5: Músicas — col 2, linha 2 -->
+        <div class="cat-card" style="background:linear-gradient(135deg,rgba(249,115,22,.16),rgba(249,115,22,.05));border-color:rgba(249,115,22,.28);">
+          <div class="cat-card-inner">
+            <div class="cat-pill" style="background:rgba(249,115,22,.15);color:#F97316;border-color:rgba(249,115,22,.4)"><span class="cat-emoji">🎵</span> Música</div>
+            <div class="cat-name">Músicas</div>
+            <div class="cat-example">Artista e faixa detectados automaticamente. Abre direto no Spotify.</div>
+          </div>
+        </div>
+
+        <!-- 6: Achadinhos — col 3, linha 2 -->
+        <div class="cat-card" style="background:linear-gradient(135deg,rgba(236,72,153,.16),rgba(236,72,153,.05));border-color:rgba(236,72,153,.28);">
+          <div class="cat-card-inner">
+            <div class="cat-pill" style="background:rgba(236,72,153,.15);color:#EC4899;border-color:rgba(236,72,153,.4)"><span class="cat-emoji">🛍️</span> Achadinho</div>
+            <div class="cat-name">Achadinhos</div>
+            <div class="cat-example">Produto, preço e onde comprar — com link direto para a loja. Sem perder o achado.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="cat-soon reveal">
+        ✦ &nbsp;<div><strong>Em breve: categorias personalizadas.</strong> Apartamento, treino, skincare, finanças e mais — desbloqueadas conforme você usa.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section class="proof">
+    <div class="container">
+      <div class="proof-header reveal">
+        <span class="section-label">Quem usa</span>
+        <h2>Finalmente uma<br>lista que funciona.</h2>
+      </div>
+    </div>
+    <div class="proof-track-wrap reveal">
+      <div class="proof-track" id="proof-track">
+
+        <div class="proof-card">
+          <p class="proof-text">"Finalmente consigo encontrar aquela receita que salvei 3 meses atrás. Antes ficava perdida entre centenas de posts."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#E8634A" id="avatar-ana"><img src="photos/ana.jpg" alt="Ana" onerror="this.parentElement.textContent='A'"></div>
+            <div><div class="proof-name">Ana Lima</div><div class="proof-location">São Paulo, BR</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Uso todo dia pra filmes. Minha lista de 'assistir depois' virou uma lista real — com título, nota e tudo."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#4A6FA5" id="avatar-pedro"><img src="photos/pedro.jpg" alt="Pedro" onerror="this.parentElement.textContent='P'"></div>
+            <div><div class="proof-name">Pedro Costa</div><div class="proof-location">Lisboa, PT</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Nunca pensei que um app de produtividade ia me fazer querer salvar mais coisas. É viciante de organizado."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#EC4899" id="avatar-fernanda"><img src="photos/fernanda.jpg" alt="Fernanda" onerror="this.parentElement.textContent='F'"></div>
+            <div><div class="proof-name">Fernanda Rocha</div><div class="proof-location">Belo Horizonte, BR</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Minha namorada me mostrou o app e agora somos os dois viciados. A gente salva lugar pra ir no fim de semana e já abre no mapa na hora."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#5B8A6F" id="avatar-guilherme"><img src="photos/guilherme.jpg" alt="Guilherme" onerror="this.parentElement.textContent='G'"></div>
+            <div><div class="proof-name">Guilherme</div><div class="proof-location">Rio de Janeiro, BR</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Tinha uma lista de livros pra ler que era um desastre. Agora cada livro tem capa, sinopse e link pra comprar. Adorei."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#F5A623" id="avatar-mariana"><img src="photos/mariana.jpg" alt="Mariana" onerror="this.parentElement.textContent='M'"></div>
+            <div><div class="proof-name">Mariana Fonseca</div><div class="proof-location">Porto, PT</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"O melhor é que não precisa nem abrir o app — só compartilho o link direto do Insta e ele processa sozinho."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#F97316" id="avatar-thiago"><img src="photos/thiago.jpg" alt="Thiago" onerror="this.parentElement.textContent='T'"></div>
+            <div><div class="proof-name">Thiago Mendes</div><div class="proof-location">Curitiba, BR</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Salvei um achadinho de tênis e já veio com o link da loja. Comprei na hora. Esse app me custa dinheiro mas vale demais."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#EC4899" id="avatar-carol"><img src="photos/carol.jpg" alt="Carol" onerror="this.parentElement.textContent='C'"></div>
+            <div><div class="proof-name">Carolina Silva</div><div class="proof-location">Salvador, BR</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Recomendei pra minha mãe que não entende nada de tecnologia. Ela entendeu na primeira tentativa. Muito intuitivo."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#8B5CF6" id="avatar-joao"><img src="photos/joao.jpg" alt="João" onerror="this.parentElement.textContent='J'"></div>
+            <div><div class="proof-name">João Paulo</div><div class="proof-location">Brasília, BR</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Uso principalmente pra músicas. Ouço algo no Reels, salvo e já aparece com o link do Spotify. Simples assim."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#06B6D4" id="avatar-sofia"><img src="photos/sofia.jpg" alt="Sofia" onerror="this.parentElement.textContent='S'"></div>
+            <div><div class="proof-name">Sofia Tavares</div><div class="proof-location">Lisboa, PT</div></div>
+          </div>
+        </div>
+
+        <div class="proof-card">
+          <p class="proof-text">"Parece simples mas muda muito a relação com o que você consome. De scroll infinito pra uma lista que você realmente usa."</p>
+          <div class="proof-author">
+            <div class="proof-avatar" style="background:#10B981" id="avatar-lucas"><img src="photos/lucas.jpg" alt="Lucas" onerror="this.parentElement.textContent='L'"></div>
+            <div><div class="proof-name">Lucas Freitas</div><div class="proof-location">São Paulo, BR</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="container">
+      <p class="proof-scroll-hint reveal">← arraste para ver mais →</p>
+    </div>
+  </section>
+
+  <!-- MOCKUP -->
+  <section class="mockup-section">
+    <div class="container">
+      <div class="mockup-header reveal">
+        <span class="section-label">O app em ação</span>
+        <h2>Veja como funciona<br>na <em>prática.</em></h2>
+        <p>Do link compartilhado ao card organizado em segundos.</p>
+      </div>
+      <div class="mockup-wrap reveal">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <video autoplay muted loop playsinline
+              style="width:100%;height:100%;object-fit:cover;display:block;">
+              <source src="video-app-web.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRO VERSION -->
+  <section class="pro-section" id="pro">
+    <div class="container">
+      <div class="pro-inner reveal">
+        <div class="pro-left">
+          <span class="section-label">Em breve</span>
+          <h2 class="pro-title">Pin of the Crop<br><em class="pro-em">PRO</em></h2>
+          <p class="pro-sub">Para quem leva a curadoria a sério.</p>
+          <ul class="pro-list">
+            <li>Análises ilimitadas — sem limite diário</li>
+            <li>Sincronização entre dispositivos</li>
+            <li>Tags e notas personalizadas em cada item</li>
+            <li>Exportação para Notion, Sheets ou CSV</li>
+            <li>Fila prioritária — resultados mais rápidos</li>
+            <li>Estatísticas de uso e categorias favoritas</li>
+          </ul>
+        </div>
+        <div class="pro-right">
+          <div class="pro-card-price">
+            <div class="pro-card-label">Acesso antecipado</div>
+            <div class="pro-price-block">
+              <span class="pro-currency">R$</span>
+              <span class="pro-amount">4,90</span>
+              <span class="pro-period">/mês</span>
+            </div>
+            <div class="pro-card-note">Desconto de lançamento.<br>Preço garante enquanto mantiveres a assinatura.</div>
+            <a href="#email-capture" class="btn-pro">Quero ser avisado</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMAIL CAPTURE -->
+  <section class="email-capture-section" id="email-capture">
+    <div class="container">
+      <div class="email-capture-inner reveal">
+        <div class="email-capture-text">
+          <span class="section-label">Lista de espera</span>
+          <h2>Fica a saber<br>em primeiro lugar.</h2>
+          <p>Lançamento do PRO, novas funcionalidades e acesso antecipado — directo para o teu email.</p>
+        </div>
+        <div class="email-capture-form">
+          <div class="email-form-wrap" id="email-form-wrap">
+            <input
+              type="email"
+              id="waitlist-email"
+              class="email-input"
+              placeholder="o teu melhor email"
+              autocomplete="email"
+            />
+            <button class="email-submit" id="email-submit-btn" onclick="submitWaitlist()">
+              <span id="email-btn-text">Entrar na lista</span>
+            </button>
+          </div>
+          <div id="email-feedback" class="email-feedback" style="display:none"></div>
+          <p class="email-privacy">Sem spam. Só o que importa. Podes sair quando quiseres.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final">
+    <div class="container">
+      <div class="reveal">
+        <h2>Seus salvos merecem<br><em>uma segunda chance.</em></h2>
+        <p>Grátis. Sem cadastro. Funciona hoje.</p>
+        <div class="cta-badges">
+          <a class="btn-primary" href="https://play.google.com/store/apps/details?id=com.pinofthecrop.app" target="_blank">↓ Baixar no Google Play</a>
+          <div class="cta-info-row">
+            <span class="badge-info">Gratuito</span>
+            <span class="badge-info">Android</span>
+            <span class="badge-info">Sem cadastro</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo"><img src="logo.png" alt="Pin of the Crop" style="height:18px;width:auto;opacity:.7"></div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacidade</a>
+        <a href="terms.html">Termos</a>
+        <a href="mailto:rafaellamounier@gmail.com">Contato</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── FLOATING BUBBLES ───
+    // Todas as categorias — atuais e futuras
+    var allCats = [
+      { emoji: '🎬', label: 'Filme',        color: '#F5A623' },
+      { emoji: '🍳', label: 'Receita',      color: '#E8634A' },
+      { emoji: '📍', label: 'Lugar',        color: '#5B8A6F' },
+      { emoji: '📚', label: 'Livro',        color: '#4A6FA5' },
+      { emoji: '🎵', label: 'Música',       color: '#F97316' },
+      { emoji: '🛍️', label: 'Achadinhos',   color: '#EC4899' },
+      { emoji: '📦', label: 'Outros',       color: '#64748B' },
+      { emoji: '🏠', label: 'Apartamento',  color: '#8B5CF6' },
+      { emoji: '💪', label: 'Treino',       color: '#10B981' },
+      { emoji: '✨', label: 'Skincare',     color: '#F472B6' },
+      { emoji: '💻', label: 'TechHacks',    color: '#06B6D4' },
+      { emoji: '🧠', label: 'LifeHacks',    color: '#A3E635' },
+      { emoji: '💰', label: 'Finanças',     color: '#FBBF24' },
+    ];
+
+    // Posições: laterais cheias, centro vazio
+    // left%: 0-28 = lateral esquerda | 29-38 = transição | 39-61 = centro (poucos) | 62-72 = transição | 73-100 = lateral direita
+    var laneData = [
+      // esquerda
+      { left: 1,  rot: -6, dur: 13, delay: 0   },
+      { left: 5,  rot: -3, dur: 16, delay: 3   },
+      { left: 9,  rot: -5, dur: 14, delay: 7   },
+      { left: 13, rot:  2, dur: 17, delay: 1.5 },
+      { left: 17, rot: -4, dur: 15, delay: 5   },
+      { left: 21, rot:  3, dur: 18, delay: 9   },
+      { left: 25, rot: -2, dur: 13, delay: 2   },
+      { left: 29, rot:  1, dur: 16, delay: 6   },
+      { left: 33, rot: -3, dur: 15, delay: 11  },
+      // centro (poucos, espalhados)
+      { left: 41, rot:  2, dur: 19, delay: 8   },
+      { left: 57, rot: -2, dur: 18, delay: 14  },
+      // direita
+      { left: 67, rot:  3, dur: 15, delay: 4   },
+      { left: 71, rot: -1, dur: 16, delay: 0.5 },
+      { left: 75, rot:  4, dur: 14, delay: 10  },
+      { left: 79, rot: -3, dur: 17, delay: 3.5 },
+      { left: 83, rot:  2, dur: 13, delay: 7   },
+      { left: 87, rot: -5, dur: 18, delay: 1   },
+      { left: 91, rot:  3, dur: 15, delay: 5.5 },
+      { left: 95, rot: -2, dur: 16, delay: 12  },
+      { left: 98, rot:  4, dur: 14, delay: 8   },
+    ];
+
+    var floatContainer = document.getElementById('floats');
+    laneData.forEach(function(lane, i) {
+      var cat = allCats[i % allCats.length];
+      var el = document.createElement('div');
+      el.className = 'float-bubble';
+      el.textContent = cat.emoji + ' ' + cat.label;
+      el.style.left = lane.left + '%';
+      el.style.bottom = '-60px';
+      el.style.background = cat.color + '1A';
+      el.style.border = '1px solid ' + cat.color + '40';
+      el.style.color = cat.color;
+      el.style.setProperty('--rot', lane.rot + 'deg');
+      el.style.animationDuration = lane.dur + 's';
+      el.style.animationDelay = lane.delay + 's';
+      floatContainer.appendChild(el);
+    });
+
+    // ─── WAITLIST EMAIL ───
+    var WAITLIST_API = 'https://save-to-list-it-production.up.railway.app';
+
+    function submitWaitlist() {
+      var emailInput = document.getElementById('waitlist-email');
+      var btn = document.getElementById('email-submit-btn');
+      var btnText = document.getElementById('email-btn-text');
+      var feedback = document.getElementById('email-feedback');
+      var email = emailInput.value.trim();
+
+      // Validação básica
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        emailInput.focus();
+        emailInput.style.outline = '2px solid rgba(240,122,143,.5)';
+        setTimeout(function() { emailInput.style.outline = ''; }, 1500);
+        return;
+      }
+
+      btn.disabled = true;
+      btnText.textContent = 'A registar…';
+      feedback.style.display = 'none';
+      feedback.className = 'email-feedback';
+
+      fetch(WAITLIST_API + '/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, source: 'landing' })
+      })
+      .then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
+      .then(function(r) {
+        if (r.ok) {
+          feedback.textContent = r.data.message || 'Adicionado à lista! 🎉';
+          feedback.className = 'email-feedback success';
+          feedback.style.display = 'block';
+          emailInput.value = '';
+          btnText.textContent = 'Entrar na lista';
+          btn.disabled = false;
+        } else {
+          throw new Error(r.data.detail || 'Erro ao registar');
+        }
+      })
+      .catch(function(e) {
+        feedback.textContent = e.message || 'Erro ao registar. Tenta novamente.';
+        feedback.className = 'email-feedback error';
+        feedback.style.display = 'block';
+        btnText.textContent = 'Entrar na lista';
+        btn.disabled = false;
+      });
+    }
+
+    // ─── SCROLL REVEAL ───
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e, idx) {
+        if (e.isIntersecting) {
+          setTimeout(function() { e.target.classList.add('visible'); }, idx * 80);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+
+    // ─── DEMO (API real) ───
+    var API_BASE = 'https://save-to-list-it-production.up.railway.app';
+    var usesLeft = 2;
+
+    var TYPE_META = {
+      filme:   { emoji: '🎬', name: 'Filme',      color: '#F5A623' },
+      receita: { emoji: '🍳', name: 'Receita',    color: '#E8634A' },
+      lugar:   { emoji: '📍', name: 'Lugar',      color: '#5B8A6F' },
+      livro:   { emoji: '📚', name: 'Livro',      color: '#4A6FA5' },
+      musica:  { emoji: '🎵', name: 'Música',     color: '#F97316' },
+      achado:  { emoji: '🛍️', name: 'Achadinho',  color: '#EC4899' },
+      outro:   { emoji: '💡', name: 'Outro',      color: '#64748B' }
+    };
+
+    function buildSkeleton() {
+      var wrap = document.createElement('div');
+      wrap.className = 'skeleton';
+      ['badge','title','full','full','medium'].forEach(function(cls) {
+        var line = document.createElement('div');
+        line.className = 'skel-line ' + cls;
+        wrap.appendChild(line);
+      });
+      return wrap;
+    }
+
+    function buildExhausted() {
+      var wrap = document.createElement('div');
+      wrap.className = 'demo-exhausted';
+      var p = document.createElement('p');
+      var strong = document.createElement('strong');
+      strong.textContent = 'Usaste as tuas 2 análises gratuitas.';
+      p.appendChild(strong);
+      p.appendChild(document.createTextNode(' Baixa o app para analisar quantos links quiseres — de graça.'));
+      wrap.appendChild(p);
+      var btn = document.createElement('a');
+      btn.className = 'btn-primary';
+      btn.href = 'https://play.google.com/store/apps/details?id=com.pinofthecrop.app';
+      btn.target = '_blank';
+      btn.style.display = 'inline-flex';
+      btn.textContent = '↓ Baixar grátis';
+      wrap.appendChild(btn);
+      return wrap;
+    }
+
+    function buildErrorDiv(msg) {
+      var div = document.createElement('div');
+      div.className = 'demo-error';
+      div.textContent = '⚠️ ' + (msg || 'Erro inesperado. Tenta novamente.');
+      return div;
+    }
+
+    function buildRealCard(result) {
+      var type = result.type || 'outro';
+      var meta = TYPE_META[type] || TYPE_META.outro;
+      var d = result.data || {};
+
+      var wrap = document.createElement('div');
+      wrap.className = 'result-card';
+
+      var badge = document.createElement('div');
+      badge.className = 'card-category-badge';
+      badge.style.background = meta.color + '1A';
+      badge.style.color = meta.color;
+      badge.textContent = meta.emoji + ' ' + meta.name;
+      wrap.appendChild(badge);
+
+      var title = document.createElement('div');
+      title.className = 'card-title';
+      title.textContent = result.title || 'Sem título';
+      wrap.appendChild(title);
+
+      var summary = document.createElement('div');
+      summary.className = 'card-summary';
+      summary.textContent = result.reel_summary || d.sinopse || d.notas || '';
+      wrap.appendChild(summary);
+
+      var metaItems = [];
+      if (type === 'filme') {
+        if (d.ano)     metaItems.push({ icon: '📅', text: String(d.ano) });
+        if (d.genero)  metaItems.push({ icon: '🎭', text: d.genero });
+        if (d.diretor) metaItems.push({ icon: '🎬', text: d.diretor });
+      } else if (type === 'livro') {
+        if (d.autor)   metaItems.push({ icon: '✍️', text: d.autor });
+        if (d.ano)     metaItems.push({ icon: '📅', text: String(d.ano) });
+        if (d.genero)  metaItems.push({ icon: '📖', text: d.genero });
+      } else if (type === 'lugar') {
+        if (d.tipo)    metaItems.push({ icon: '🏷️', text: d.tipo });
+        if (d.morada)  metaItems.push({ icon: '📍', text: d.morada.substring(0, 45) + (d.morada.length > 45 ? '…' : '') });
+      } else if (type === 'receita') {
+        if (d.tempo_min) metaItems.push({ icon: '⏱️', text: d.tempo_min + ' min' });
+        if (d.porcoes)   metaItems.push({ icon: '👥', text: d.porcoes + ' porções' });
+      } else if (type === 'musica') {
+        if (d.artista) metaItems.push({ icon: '🎤', text: d.artista });
+        if (d.genero)  metaItems.push({ icon: '🎵', text: d.genero });
+        if (d.ano)     metaItems.push({ icon: '📅', text: String(d.ano) });
+      } else if (type === 'achado') {
+        if (d.loja)  metaItems.push({ icon: '🏪', text: d.loja });
+        if (d.preco) metaItems.push({ icon: '💰', text: d.preco });
+      }
+
+      if (metaItems.length > 0) {
+        var metaEl = document.createElement('div');
+        metaEl.className = 'card-meta';
+        metaItems.forEach(function(m) {
+          var span = document.createElement('span');
+          span.textContent = m.icon + ' ' + m.text;
+          metaEl.appendChild(span);
+        });
+        wrap.appendChild(metaEl);
+      }
+
+      var realBadge = document.createElement('div');
+      realBadge.className = 'demo-real-badge';
+      realBadge.textContent = '✨ Resultado real — gerado pela IA agora';
+      wrap.appendChild(realBadge);
+
+      return wrap;
+    }
+
+    function updateUses() {
+      document.getElementById('dot1').className = 'use-dot' + (usesLeft < 2 ? ' used' : '');
+      document.getElementById('dot2').className = 'use-dot' + (usesLeft < 1 ? ' used' : '');
+      var labels = ['0 análises restantes — baixa o app', '1 análise restante', '2 análises gratuitas disponíveis'];
+      document.getElementById('uses-label').textContent = labels[Math.max(0, usesLeft)];
+    }
+
+    function pollDemoResult(jobId) {
+      return new Promise(function(resolve, reject) {
+        var attempts = 0;
+        var maxAttempts = 20;
+        function check() {
+          attempts++;
+          fetch(API_BASE + '/demo/result/' + jobId)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data.status === 'done')    { resolve(data.result); return; }
+              if (data.status === 'error')   { reject(new Error(data.detail || 'Erro na análise')); return; }
+              if (attempts >= maxAttempts)   { reject(new Error('A análise está a demorar. Tenta novamente.')); return; }
+              setTimeout(check, 4000);
+            })
+            .catch(function(e) { reject(e); });
+        }
+        setTimeout(check, 4000);
+      });
+    }
+
+    function runDemo() {
+      var urlInput = document.getElementById('demo-url');
+      var resultEl = document.getElementById('demo-result');
+      var btn      = document.getElementById('demo-btn');
+      var btnText  = document.getElementById('btn-text');
+      var url      = urlInput.value.trim();
+
+      if (!url) {
+        urlInput.focus();
+        urlInput.style.borderColor = 'rgba(240,122,143,0.5)';
+        setTimeout(function() { urlInput.style.borderColor = ''; }, 1500);
+        return;
+      }
+      if (usesLeft <= 0) {
+        resultEl.textContent = '';
+        resultEl.appendChild(buildExhausted());
+        return;
+      }
+
+      btn.disabled = true;
+      btnText.textContent = 'Analisando…';
+      resultEl.textContent = '';
+      resultEl.appendChild(buildSkeleton());
+
+      fetch(API_BASE + '/demo/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url, lang: 'pt' })
+      })
+      .then(function(res) {
+        if (res.status === 429) {
+          usesLeft = 0;
+          updateUses();
+          resultEl.textContent = '';
+          resultEl.appendChild(buildExhausted());
+          btn.disabled = false;
+          btnText.textContent = 'Baixar app';
+          return null;
+        }
+        if (!res.ok) {
+          return res.json().then(function(e) { throw new Error(e.detail || 'Erro ao iniciar análise'); });
+        }
+        return res.json();
+      })
+      .then(function(data) {
+        if (!data) return;
+        usesLeft = data.uses_left;
+        updateUses();
+        urlInput.value = '';
+        return pollDemoResult(data.job_id);
+      })
+      .then(function(result) {
+        if (!result) return;
+        resultEl.textContent = '';
+        resultEl.appendChild(buildRealCard(result));
+        btn.disabled = false;
+        btnText.textContent = usesLeft > 0 ? 'Analisar' : 'Baixar app';
+        if (usesLeft === 0) {
+          setTimeout(function() {
+            resultEl.textContent = '';
+            resultEl.appendChild(buildExhausted());
+          }, 5000);
+        }
+      })
+      .catch(function(e) {
+        resultEl.textContent = '';
+        resultEl.appendChild(buildErrorDiv(e.message));
+        btn.disabled = false;
+        btnText.textContent = usesLeft > 0 ? 'Analisar' : 'Baixar app';
+      });
+    }
+
+    document.getElementById('demo-btn').addEventListener('click', runDemo);
+    document.getElementById('demo-url').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') runDemo();
+    });
+
+    // ─── PROOF CAROUSEL — Dock effect + auto-scroll + drag ───
+    (function() {
+      var track = document.getElementById('proof-track');
+      if (!track) return;
+
+      var autoSpeed   = 0.45;  // px/frame
+      var direction   = 1;
+      var isHovered   = false;
+      var isDragging  = false;
+      var dragStartX  = 0;
+      var dragStartSL = 0;
+
+      // Dock scaling
+      function updateDock() {
+        var cards = track.querySelectorAll('.proof-card');
+        var tw    = track.getBoundingClientRect();
+        var cx    = tw.left + tw.width / 2;
+        cards.forEach(function(card) {
+          var r   = card.getBoundingClientRect();
+          var ccx = r.left + r.width / 2;
+          var dist = Math.abs(ccx - cx);
+          var t   = Math.max(0, 1 - dist / (tw.width * 0.45));
+          t = t * t * (3 - 2 * t); // smoothstep
+          var scale   = 0.78 + t * 0.26;
+          var opacity = 0.45 + t * 0.55;
+          card.style.transform = 'scale(' + scale.toFixed(3) + ')';
+          card.style.opacity   = opacity.toFixed(3);
+        });
+      }
+
+      // Auto-scroll loop
+      function tick() {
+        if (!isHovered && !isDragging) {
+          track.scrollLeft += autoSpeed * direction;
+          var max = track.scrollWidth - track.clientWidth;
+          if (track.scrollLeft >= max - 2) direction = -1;
+          if (track.scrollLeft <= 2)       direction =  1;
+        }
+        updateDock();
+        requestAnimationFrame(tick);
+      }
+
+      // Hover pause
+      track.addEventListener('mouseenter', function() { isHovered = true; });
+      track.addEventListener('mouseleave', function() { isHovered = false; isDragging = false; });
+
+      // Mouse drag (2.5× mais rápido)
+      track.addEventListener('mousedown', function(e) {
+        isDragging  = true;
+        dragStartX  = e.pageX;
+        dragStartSL = track.scrollLeft;
+        e.preventDefault();
+      });
+      window.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        track.scrollLeft = dragStartSL - (e.pageX - dragStartX) * 2.5;
+      });
+      window.addEventListener('mouseup', function() { isDragging = false; });
+
+      // Touch
+      var touchX0 = 0, touchSL0 = 0;
+      track.addEventListener('touchstart', function(e) {
+        touchX0  = e.touches[0].pageX;
+        touchSL0 = track.scrollLeft;
+        isHovered = true;
+      }, { passive: true });
+      track.addEventListener('touchmove', function(e) {
+        track.scrollLeft = touchSL0 + (touchX0 - e.touches[0].pageX) * 1.8;
+      }, { passive: true });
+      track.addEventListener('touchend', function() { isHovered = false; });
+
+      tick();
+    })();
+
+    // ─── 3D TILT MAGNÉTICO ───
+    // Todos os cards reagem — o mais perto se inclina mais, o mais longe menos
+    var tiltCards = Array.from(document.querySelectorAll('.cat-card'));
+    var TILT_MAX    = 10;   // graus máximos no card sob o cursor
+    var RADIUS      = 700;  // raio de influência em px
+
+    function applyMagneticTilt(mouseX, mouseY, activeCard) {
+      tiltCards.forEach(function(card) {
+        var rect = card.getBoundingClientRect();
+        var cardCX = rect.left + rect.width  / 2;
+        var cardCY = rect.top  + rect.height / 2;
+        var dx = mouseX - cardCX;
+        var dy = mouseY - cardCY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+
+        var rotX, rotY, scl;
+        if (card === activeCard) {
+          // Card sob o cursor: usa posição local para tilt preciso
+          var lx = mouseX - rect.left;
+          var ly = mouseY - rect.top;
+          rotX = ((ly - rect.height / 2) / (rect.height / 2)) * -TILT_MAX;
+          rotY = ((lx - rect.width  / 2) / (rect.width  / 2)) *  TILT_MAX;
+          scl  = 1.045;
+          card.style.transition = 'transform 0.08s ease';
+        } else {
+          // Cards vizinhos: falloff quadrático com a distância
+          var factor = Math.max(0, 1 - dist / RADIUS);
+          factor = factor * factor;
+          var strength = TILT_MAX * factor * 0.55;
+          rotX = (-dy / RADIUS) * strength * 2;
+          rotY = ( dx / RADIUS) * strength * 2;
+          scl  = 1 + factor * 0.015;
+          card.style.transition = 'transform 0.18s ease';
+        }
+
+        card.style.transform =
+          'perspective(900px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) scale3d(' + scl + ',' + scl + ',' + scl + ')';
+      });
+    }
+
+    function resetAllCards() {
+      tiltCards.forEach(function(card) {
+        card.style.transition = 'transform 0.55s cubic-bezier(.22,.68,0,1.2)';
+        card.style.transform  = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+      });
+    }
+
+    tiltCards.forEach(function(card) {
+      card.addEventListener('mousemove', function(e) {
+        applyMagneticTilt(e.clientX, e.clientY, card);
+      });
+      card.addEventListener('mouseleave', resetAllCards);
+    });
+  </script>
+</body>
+</html>
