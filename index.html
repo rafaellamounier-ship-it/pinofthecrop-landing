@@ -79,7 +79,7 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       text-align: center;
-      padding: 140px 24px 80px;
+      padding: 110px 24px 56px;
       position: relative;
     }
     .hero-eyebrow {
@@ -150,7 +150,7 @@
 
     /* ─── PROBLEM ─── */
     .problem {
-      padding: 120px 0;
+      padding: 88px 0;
       background: var(--bg2);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
@@ -181,7 +181,7 @@
 
     /* ─── HOW IT WORKS ─── */
     .how { padding: 120px 0; }
-    .how-header { text-align: center; margin-bottom: 72px; }
+    .how-header { text-align: center; margin-bottom: 48px; }
     .how-header h2 {
       font-family: 'DM Serif Display', serif;
       font-size: clamp(36px, 4vw, 54px);
@@ -210,7 +210,7 @@
     /* ─── DEMO ─── */
     .demo-box {
       background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 24px; padding: 48px;
+      border-radius: 24px; padding: 36px;
       max-width: 640px; margin: 0 auto;
     }
     .demo-box h3 {
@@ -299,7 +299,7 @@
 
     /* ─── SOLUTION (problem + categories merged) ─── */
     .solution {
-      padding: 120px 0;
+      padding: 88px 0;
       background: var(--bg2);
       border-top: 1px solid var(--border);
     }
@@ -434,7 +434,7 @@
 
     /* ─── MOCKUP ─── */
     .mockup-section {
-      padding: 120px 0;
+      padding: 88px 0;
       border-top: 1px solid var(--border);
       text-align: center;
     }
@@ -494,7 +494,7 @@
 
     /* ─── CTA FINAL ─── */
     .cta-final {
-      padding: 140px 0; text-align: center;
+      padding: 96px 0; text-align: center;
       background: var(--bg2); border-top: 1px solid var(--border);
     }
     .cta-final h2 {
@@ -555,7 +555,7 @@
 
     /* ─── PRO SECTION ─── */
     .pro-section {
-      padding: 120px 0;
+      padding: 88px 0;
       background: var(--bg2);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
@@ -636,7 +636,7 @@
 
     /* ─── O QUE É ─── */
     .oqueeh {
-      padding: 120px 0;
+      padding: 88px 0;
       background: var(--bg2);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
@@ -713,9 +713,35 @@
       font-size: 15px; line-height: 1.75; color: var(--creme2);
     }
     .how-header-sub {
-      font-size: 17px; color: var(--creme2);
-      margin-top: 14px; line-height: 1.6;
+      font-size: 16px; color: var(--creme2);
+      margin-top: 12px; line-height: 1.6;
     }
+    .step-ed-img {
+      flex-shrink: 0; width: 130px;
+      border-left: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px 16px;
+      background: rgba(255,255,255,.01);
+    }
+    .step-img-ph {
+      width: 86px; height: 154px;
+      border-radius: 13px;
+      border: 1px dashed rgba(237,230,227,.12);
+      background: rgba(255,255,255,.02);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 6px; position: relative; overflow: hidden;
+    }
+    .step-img-ph > span {
+      font-size: 9px; color: rgba(237,230,227,.2);
+      letter-spacing: .8px; text-transform: uppercase; text-align: center;
+    }
+    /* Slot for real screenshot: replace .step-img-ph content with <img> */
+    .step-img-ph img {
+      width: 100%; height: 100%; object-fit: cover;
+      border-radius: 12px; display: block;
+    }
+    @media (max-width: 768px) { .step-ed-img { display: none; } }
     @media (max-width: 640px) {
       .step-ed-num { width: 56px; font-size: 42px; }
       .step-ed-body { padding: 24px 20px; }
@@ -779,7 +805,7 @@
 
     /* ─── EMAIL CAPTURE ─── */
     .email-capture-section {
-      padding: 120px 0;
+      padding: 88px 0;
       background: var(--bg);
       border-top: 1px solid var(--border);
     }
@@ -919,6 +945,12 @@
             <h3>Copia e cola o link</h3>
             <p>Qualquer Reel do Instagram ou vídeo do TikTok. Funciona até pelo botão de compartilhar — sem precisar abrir o app primeiro.</p>
           </div>
+          <div class="step-ed-img">
+            <div class="step-img-ph">
+              <!-- <img src="screenshots/step1.png" alt="Passo 1"> -->
+              <span>print<br>aqui</span>
+            </div>
+          </div>
         </div>
         <div class="step-ed">
           <div class="step-ed-num">2</div>
@@ -926,12 +958,24 @@
             <h3>A IA lê o vídeo por você</h3>
             <p>Ela assiste, lê as legendas, detecta o tipo de conteúdo e extrai o que importa — título, ingredientes, onde fica, onde assistir.</p>
           </div>
+          <div class="step-ed-img">
+            <div class="step-img-ph">
+              <!-- <img src="screenshots/step2.png" alt="Passo 2"> -->
+              <span>print<br>aqui</span>
+            </div>
+          </div>
         </div>
         <div class="step-ed">
           <div class="step-ed-num">3</div>
           <div class="step-ed-body">
             <h3>Card pronto pra usar</h3>
             <p>Não é pasta de favoritos. É um card com as informações organizadas, na categoria certa — pronto pra quando você realmente precisar.</p>
+          </div>
+          <div class="step-ed-img">
+            <div class="step-img-ph">
+              <!-- <img src="screenshots/step3.png" alt="Passo 3"> -->
+              <span>print<br>aqui</span>
+            </div>
           </div>
         </div>
       </div>
@@ -943,7 +987,7 @@
         <div class="demo-uses">
           <div class="use-dot" id="dot1"></div>
           <div class="use-dot" id="dot2"></div>
-          <span id="uses-label">2 análises gratuitas disponíveis</span>
+          <span id="uses-label">2 análises gratuitas</span>
         </div>
         <div class="demo-input-row">
           <input class="demo-input" id="demo-url" type="url" placeholder="https://www.instagram.com/reel/..." />
@@ -1365,7 +1409,18 @@
 
     // ─── DEMO (API real) ───
     var API_BASE = 'https://save-to-list-it-production.up.railway.app';
-    var usesLeft = 2;
+
+    // Persist uses across page refreshes — capped at 2, can only go down
+    var _storedUses = parseInt(localStorage.getItem('potc_uses') || '2', 10);
+    var usesLeft = (isNaN(_storedUses) || _storedUses > 2) ? 2 : Math.max(0, _storedUses);
+    // Reflect persisted state immediately on page load
+    (function() {
+      updateUses();
+      if (usesLeft === 0) {
+        var btnTxt = document.getElementById('btn-text');
+        if (btnTxt) btnTxt.textContent = 'Ver app';
+      }
+    })();
 
     var TYPE_META = {
       filme:   { emoji: '🎬', name: 'Filme',      color: '#F5A623' },
@@ -1655,7 +1710,7 @@
     function updateUses() {
       document.getElementById('dot1').className = 'use-dot' + (usesLeft < 2 ? ' used' : '');
       document.getElementById('dot2').className = 'use-dot' + (usesLeft < 1 ? ' used' : '');
-      var labels = ['0 análises restantes — baixa o app', '1 análise restante', '2 análises gratuitas disponíveis'];
+      var labels = ['Análises esgotadas', '1 análise restante', '2 análises gratuitas'];
       document.getElementById('uses-label').textContent = labels[Math.max(0, usesLeft)];
     }
 
@@ -1694,7 +1749,7 @@
       }
       if (usesLeft <= 0) {
         resultEl.textContent = '';
-        resultEl.appendChild(buildExhausted());
+        resultEl.appendChild(buildStaticExample());
         return;
       }
 
@@ -1711,11 +1766,12 @@
       .then(function(res) {
         if (res.status === 429) {
           usesLeft = 0;
+          localStorage.setItem('potc_uses', 0);
           updateUses();
           resultEl.textContent = '';
-          resultEl.appendChild(buildExhausted());
+          resultEl.appendChild(buildStaticExample());
           btn.disabled = false;
-          btnText.textContent = 'Baixar app';
+          btnText.textContent = 'Ver app';
           return null;
         }
         if (!res.ok) {
@@ -1725,7 +1781,8 @@
       })
       .then(function(data) {
         if (!data) return;
-        usesLeft = data.uses_left;
+        usesLeft = (typeof data.uses_left === 'number') ? data.uses_left : Math.max(0, usesLeft - 1);
+        localStorage.setItem('potc_uses', usesLeft);
         updateUses();
         urlInput.value = '';
         return pollDemoResult(data.job_id);
@@ -1735,11 +1792,11 @@
         resultEl.textContent = '';
         resultEl.appendChild(buildRealCard(result));
         btn.disabled = false;
-        btnText.textContent = usesLeft > 0 ? 'Analisar' : 'Baixar app';
+        btnText.textContent = usesLeft > 0 ? 'Analisar' : 'Ver app';
         if (usesLeft === 0) {
           setTimeout(function() {
             resultEl.textContent = '';
-            resultEl.appendChild(buildExhausted());
+            resultEl.appendChild(buildStaticExample());
           }, 5000);
         }
       })
@@ -1747,8 +1804,45 @@
         resultEl.textContent = '';
         resultEl.appendChild(buildErrorDiv(e.message));
         btn.disabled = false;
-        btnText.textContent = usesLeft > 0 ? 'Analisar' : 'Baixar app';
+        btnText.textContent = usesLeft > 0 ? 'Analisar' : 'Ver app';
       });
+    }
+
+    // Static example shown when demo uses are exhausted
+    function buildStaticExample() {
+      var fakeResult = {
+        type: 'filme',
+        title: 'Duna: Parte Dois',
+        reel_summary: 'Paul Atreides une forças com os Fremen enquanto busca vingança contra os que destruíram sua família — e tenta evitar um futuro que só ele consegue prever.',
+        data: {
+          ano: 2024,
+          genero: 'Ficção Científica',
+          diretor: 'Denis Villeneuve',
+          streamings: ['Max', 'Prime', 'Apple TV+']
+        }
+      };
+      var card = buildRealCard(fakeResult);
+      var badge = card.querySelector('.demo-real-badge');
+      if (badge) badge.textContent = '✦ Exemplo de resultado — baixa o app para analisar os teus links';
+
+      var ctaWrap = document.createElement('div');
+      ctaWrap.style.cssText = 'margin-top:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;';
+      var btn = document.createElement('a');
+      btn.className = 'btn-primary';
+      btn.href = 'https://play.google.com/store/apps/details?id=com.pinofthecrop.app';
+      btn.target = '_blank';
+      btn.style.cssText = 'display:inline-flex;font-size:14px;padding:12px 24px;';
+      btn.textContent = '↓ Baixar grátis';
+      var note = document.createElement('span');
+      note.style.cssText = 'font-size:12px;color:rgba(237,230,227,.4);';
+      note.textContent = 'Grátis · Sem cadastro';
+      ctaWrap.appendChild(btn);
+      ctaWrap.appendChild(note);
+
+      var wrap = document.createElement('div');
+      wrap.appendChild(card);
+      wrap.appendChild(ctaWrap);
+      return wrap;
     }
 
     document.getElementById('demo-btn').addEventListener('click', runDemo);
