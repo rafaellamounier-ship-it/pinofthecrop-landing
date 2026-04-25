@@ -634,6 +634,149 @@
     .nav-links a:hover { color: var(--creme); }
     @media (max-width: 640px) { .nav-links { display: none; } }
 
+    /* ─── O QUE É ─── */
+    .oqueeh {
+      padding: 120px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .oqueeh-inner { max-width: 680px; }
+    .oqueeh-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(48px, 6vw, 76px);
+      letter-spacing: -2px; line-height: .95;
+      margin: 8px 0 28px;
+    }
+    .oqueeh-title em { color: var(--yellow); font-style: italic; }
+    .oqueeh-lead {
+      font-size: 18px; line-height: 1.7;
+      color: var(--creme); font-weight: 400;
+      margin-bottom: 40px;
+    }
+    .oqueeh-wordplay-row {
+      display: flex; align-items: center;
+      gap: 12px; flex-wrap: wrap;
+      padding: 24px 28px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.02);
+    }
+    .ety-piece { display: flex; flex-direction: column; gap: 3px; }
+    .ety-term {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px; letter-spacing: -.3px;
+      color: var(--creme); line-height: 1;
+    }
+    .ety-def { font-size: 11px; color: var(--creme2); line-height: 1.35; max-width: 120px; }
+    .ety-op {
+      font-size: 20px; color: rgba(243,196,58,.35);
+      font-weight: 300; flex-shrink: 0; padding: 0 4px;
+    }
+    .ety-result .ety-term {
+      color: var(--yellow); font-style: italic;
+    }
+    @media (max-width: 600px) {
+      .oqueeh-wordplay-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .ety-op { transform: rotate(90deg); }
+      .ety-def { max-width: none; }
+    }
+
+    /* ─── HOW EDITORIAL ─── */
+    .steps-editorial {
+      display: flex; flex-direction: column;
+      margin-bottom: 80px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .step-ed {
+      display: flex; align-items: stretch;
+    }
+    .step-ed + .step-ed { border-top: 1px solid var(--border); }
+    .step-ed-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 60px; line-height: 1;
+      color: rgba(243,196,58,.12);
+      letter-spacing: -3px; flex-shrink: 0;
+      width: 100px;
+      display: flex; align-items: center; justify-content: center;
+      border-right: 1px solid var(--border);
+      background: rgba(255,255,255,.01);
+    }
+    .step-ed-body { flex: 1; padding: 36px 40px; }
+    .step-ed-body h3 {
+      font-size: 19px; font-weight: 700;
+      color: var(--creme); margin-bottom: 8px; letter-spacing: -.2px;
+    }
+    .step-ed-body p {
+      font-size: 15px; line-height: 1.75; color: var(--creme2);
+    }
+    .how-header-sub {
+      font-size: 17px; color: var(--creme2);
+      margin-top: 14px; line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .step-ed-num { width: 56px; font-size: 42px; }
+      .step-ed-body { padding: 24px 20px; }
+      .step-ed-body h3 { font-size: 17px; }
+    }
+
+    /* ─── CARD RICH CONTENT ─── */
+    .card-rich {
+      padding-top: 16px; margin-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .card-rich-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--creme2); opacity: .55;
+      margin-bottom: 10px;
+    }
+    .card-streaming-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .card-stream-btn {
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 13px; font-weight: 600;
+      color: var(--creme); text-decoration: none;
+      background: rgba(255,255,255,.05);
+      transition: background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .card-stream-btn:hover { background: rgba(255,255,255,.1); border-color: rgba(237,230,227,.2); }
+    .card-spotify-btn { color: #1DB954; border-color: rgba(29,185,84,.3); background: rgba(29,185,84,.08); }
+    .card-spotify-btn:hover { background: rgba(29,185,84,.15); }
+    .card-yt-btn { color: #FF4444; border-color: rgba(255,68,68,.3); background: rgba(255,68,68,.07); }
+    .card-yt-btn:hover { background: rgba(255,68,68,.14); }
+    .card-action-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 10px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      color: var(--creme); font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: background .15s;
+    }
+    .card-action-btn:hover { background: rgba(255,255,255,.1); }
+    .card-maps-btn { color: #5B8A6F; border-color: rgba(91,138,111,.3); background: rgba(91,138,111,.08); }
+    .card-maps-btn:hover { background: rgba(91,138,111,.15); }
+    .card-ingredients {
+      list-style: none; padding: 0; margin: 0;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 16px;
+    }
+    .card-ingredients li {
+      font-size: 13px; color: var(--creme2); line-height: 1.45;
+      padding-left: 14px; position: relative;
+    }
+    .card-ingredients li::before {
+      content: '·'; position: absolute; left: 0;
+      color: var(--yellow); font-weight: 900;
+    }
+    .ingredients-more { color: rgba(237,230,227,.35) !important; font-style: italic; }
+    .ingredients-more::before { display: none !important; }
+    @media (max-width: 480px) {
+      .card-ingredients { grid-template-columns: 1fr; }
+    }
+
     /* ─── EMAIL CAPTURE ─── */
     .email-capture-section {
       padding: 120px 0;
@@ -727,6 +870,36 @@
     </div>
   </section>
 
+  <!-- O QUE É -->
+  <section class="oqueeh">
+    <div class="container">
+      <div class="oqueeh-inner reveal">
+        <span class="section-label">O que é</span>
+        <h2 class="oqueeh-title">A <em>nata</em><br>dos seus salvos.</h2>
+        <p class="oqueeh-lead">
+          Um app para quem salva tudo no Instagram e TikTok — e não encontra nada depois.<br>
+          Cole um link, a IA identifica e organiza. Sem categorizar na mão, sem digitar nada.
+        </p>
+        <div class="oqueeh-wordplay-row">
+          <div class="ety-piece">
+            <span class="ety-term">Pin</span>
+            <span class="ety-def">fixar, salvar o que importa</span>
+          </div>
+          <span class="ety-op">+</span>
+          <div class="ety-piece">
+            <span class="ety-term">of the Crop</span>
+            <span class="ety-def">cream of the crop — a nata, o melhor do melhor</span>
+          </div>
+          <span class="ety-op">=</span>
+          <div class="ety-piece ety-result">
+            <span class="ety-term">a nata da nata</span>
+            <span class="ety-def">só o que realmente vale</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- SOLUTION (problem + categories merged) -->
 
 
@@ -736,26 +909,30 @@
     <div class="container">
       <div class="how-header reveal">
         <span class="section-label">Como funciona</span>
-        <h2>Três segundos.<br>Zero esforço.</h2>
+        <h2>Do link ao card<br>em segundos.</h2>
+        <p class="how-header-sub">Sem formulários, sem tags, sem nenhum trabalho manual.</p>
       </div>
-      <div class="steps reveal">
-        <div class="step">
-          <span class="step-num">01</span>
-          <span class="step-icon">🔗</span>
-          <h3>Cole o link</h3>
-          <p>Qualquer vídeo do Instagram Reels ou TikTok. Só copiar e colar.</p>
+      <div class="steps-editorial reveal">
+        <div class="step-ed">
+          <div class="step-ed-num">1</div>
+          <div class="step-ed-body">
+            <h3>Copia e cola o link</h3>
+            <p>Qualquer Reel do Instagram ou vídeo do TikTok. Funciona até pelo botão de compartilhar — sem precisar abrir o app primeiro.</p>
+          </div>
         </div>
-        <div class="step">
-          <span class="step-num">02</span>
-          <span class="step-icon">✨</span>
-          <h3>A IA analisa</h3>
-          <p>Assiste ao vídeo, entende o conteúdo e extrai o que importa.</p>
+        <div class="step-ed">
+          <div class="step-ed-num">2</div>
+          <div class="step-ed-body">
+            <h3>A IA lê o vídeo por você</h3>
+            <p>Ela assiste, lê as legendas, detecta o tipo de conteúdo e extrai o que importa — título, ingredientes, onde fica, onde assistir.</p>
+          </div>
         </div>
-        <div class="step">
-          <span class="step-num">03</span>
-          <span class="step-icon">📋</span>
-          <h3>Card pronto</h3>
-          <p>Categoria certa, resumo limpo, informações organizadas.</p>
+        <div class="step-ed">
+          <div class="step-ed-num">3</div>
+          <div class="step-ed-body">
+            <h3>Card pronto pra usar</h3>
+            <p>Não é pasta de favoritos. É um card com as informações organizadas, na categoria certa — pronto pra quando você realmente precisar.</p>
+          </div>
         </div>
       </div>
 
@@ -1297,12 +1474,182 @@
         wrap.appendChild(metaEl);
       }
 
+      var richEl = buildTypeRich(type, d, result);
+      if (richEl) wrap.appendChild(richEl);
+
       var realBadge = document.createElement('div');
       realBadge.className = 'demo-real-badge';
       realBadge.textContent = '✨ Resultado real — gerado pela IA agora';
       wrap.appendChild(realBadge);
 
       return wrap;
+    }
+
+    function buildTypeRich(type, d, result) {
+      var title = result.title || '';
+
+      if (type === 'filme') {
+        var platforms = d.streamings || d.plataformas || [];
+        var SMAP = {
+          'netflix':    ['Netflix',   'https://www.netflix.com/search?q='],
+          'prime':      ['Prime',     'https://www.primevideo.com/search?phrase='],
+          'primevideo': ['Prime',     'https://www.primevideo.com/search?phrase='],
+          'amazon':     ['Prime',     'https://www.primevideo.com/search?phrase='],
+          'disney':     ['Disney+',   'https://www.disneyplus.com/search/'],
+          'disneyplus': ['Disney+',   'https://www.disneyplus.com/search/'],
+          'max':        ['Max',       'https://play.max.com/search?q='],
+          'hbo':        ['Max',       'https://play.max.com/search?q='],
+          'hbomax':     ['Max',       'https://play.max.com/search?q='],
+          'globoplay':  ['Globoplay', 'https://globoplay.globo.com/busca/?busca='],
+          'apple':      ['Apple TV+', 'https://tv.apple.com/search?term='],
+          'appletv':    ['Apple TV+', 'https://tv.apple.com/search?term='],
+          'youtube':    ['YouTube',   'https://www.youtube.com/results?search_query='],
+          'paramount':  ['Paramount+','https://www.paramountplus.com/search/'],
+        };
+        var container = document.createElement('div');
+        container.className = 'card-rich';
+        var label = document.createElement('div');
+        label.className = 'card-rich-label';
+        label.textContent = 'Onde assistir';
+        container.appendChild(label);
+        var btns = document.createElement('div');
+        btns.className = 'card-streaming-btns';
+        if (Array.isArray(platforms) && platforms.length > 0) {
+          platforms.slice(0, 5).forEach(function(p) {
+            var key = (p + '').toLowerCase().replace(/[\s\+\-\.]/g, '').replace(/[^a-z]/g, '');
+            var info = SMAP[key] || null;
+            var btn = document.createElement('a');
+            btn.className = 'card-stream-btn';
+            btn.target = '_blank'; btn.rel = 'noopener';
+            if (info) {
+              btn.href = info[1] + encodeURIComponent(title);
+              btn.textContent = info[0];
+            } else {
+              btn.href = 'https://www.google.com/search?q=' + encodeURIComponent(p + ' ' + title);
+              btn.textContent = p;
+            }
+            btns.appendChild(btn);
+          });
+        }
+        if (btns.children.length === 0) {
+          [['Netflix','https://www.netflix.com/search?q='],['Prime','https://www.primevideo.com/search?phrase='],['Disney+','https://www.disneyplus.com/search/']].forEach(function(info) {
+            var btn = document.createElement('a');
+            btn.className = 'card-stream-btn';
+            btn.href = info[1] + encodeURIComponent(title);
+            btn.target = '_blank'; btn.rel = 'noopener';
+            btn.textContent = info[0];
+            btns.appendChild(btn);
+          });
+        }
+        container.appendChild(btns);
+        return container;
+      }
+
+      if (type === 'receita') {
+        var ingredientes = d.ingredientes || d.ingredients || [];
+        if (typeof ingredientes === 'string') {
+          ingredientes = ingredientes.split(/[\n,;]/).map(function(s) { return s.trim(); }).filter(Boolean);
+        }
+        if (Array.isArray(ingredientes) && ingredientes.length > 0) {
+          var container = document.createElement('div');
+          container.className = 'card-rich';
+          var label = document.createElement('div');
+          label.className = 'card-rich-label';
+          label.textContent = 'Ingredientes';
+          container.appendChild(label);
+          var list = document.createElement('ul');
+          list.className = 'card-ingredients';
+          ingredientes.slice(0, 8).forEach(function(item) {
+            var li = document.createElement('li');
+            li.textContent = item;
+            list.appendChild(li);
+          });
+          if (ingredientes.length > 8) {
+            var li = document.createElement('li');
+            li.className = 'ingredients-more';
+            li.textContent = '+' + (ingredientes.length - 8) + ' mais no app';
+            list.appendChild(li);
+          }
+          container.appendChild(list);
+          return container;
+        }
+        return null;
+      }
+
+      if (type === 'lugar') {
+        var container = document.createElement('div');
+        container.className = 'card-rich';
+        var query = title + (d.cidade ? ', ' + d.cidade : '') + (d.pais ? ', ' + d.pais : '');
+        var url = d.maps_url || ('https://www.google.com/maps/search/' + encodeURIComponent(query));
+        var btn = document.createElement('a');
+        btn.className = 'card-action-btn card-maps-btn';
+        btn.href = url;
+        btn.target = '_blank'; btn.rel = 'noopener';
+        btn.textContent = '📍 Abrir no Maps';
+        container.appendChild(btn);
+        return container;
+      }
+
+      if (type === 'musica') {
+        var container = document.createElement('div');
+        container.className = 'card-rich';
+        var btns = document.createElement('div');
+        btns.className = 'card-streaming-btns';
+        var q = ((d.artista || '') + ' ' + title).trim();
+        var sp = document.createElement('a');
+        sp.className = 'card-stream-btn card-spotify-btn';
+        sp.href = d.spotify_url || ('https://open.spotify.com/search/' + encodeURIComponent(q));
+        sp.target = '_blank'; sp.rel = 'noopener';
+        sp.textContent = '♫ Spotify';
+        btns.appendChild(sp);
+        var yt = document.createElement('a');
+        yt.className = 'card-stream-btn card-yt-btn';
+        yt.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
+        yt.target = '_blank'; yt.rel = 'noopener';
+        yt.textContent = '▶ YouTube';
+        btns.appendChild(yt);
+        container.appendChild(btns);
+        return container;
+      }
+
+      if (type === 'achado') {
+        if (d.link) {
+          var container = document.createElement('div');
+          container.className = 'card-rich';
+          var btn = document.createElement('a');
+          btn.className = 'card-action-btn';
+          btn.href = d.link;
+          btn.target = '_blank'; btn.rel = 'noopener';
+          btn.textContent = '🛍️ Ver produto';
+          container.appendChild(btn);
+          return container;
+        }
+        return null;
+      }
+
+      if (type === 'livro') {
+        var container = document.createElement('div');
+        container.className = 'card-rich';
+        var btns = document.createElement('div');
+        btns.className = 'card-streaming-btns';
+        var q = (title + (d.autor ? ' ' + d.autor : '')).trim();
+        var amz = document.createElement('a');
+        amz.className = 'card-stream-btn';
+        amz.href = d.amazon_link || ('https://www.amazon.com.br/s?k=' + encodeURIComponent(q));
+        amz.target = '_blank'; amz.rel = 'noopener';
+        amz.textContent = 'Amazon';
+        btns.appendChild(amz);
+        var gr = document.createElement('a');
+        gr.className = 'card-stream-btn';
+        gr.href = 'https://www.goodreads.com/search?q=' + encodeURIComponent(q);
+        gr.target = '_blank'; gr.rel = 'noopener';
+        gr.textContent = 'Goodreads';
+        btns.appendChild(gr);
+        container.appendChild(btns);
+        return container;
+      }
+
+      return null;
     }
 
     function updateUses() {
