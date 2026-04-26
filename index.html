@@ -866,6 +866,79 @@
       .email-form-wrap { flex-direction: column; border-radius: 16px; }
       .email-submit { border-radius: 12px; margin: 0 4px 4px; }
     }
+
+    /* ─── THREE PHONES ─── */
+    .three-phones {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 72px;
+      padding-bottom: 24px;
+    }
+    .phone-slot { display: flex; flex-direction: column; align-items: center; }
+    .phone-slot.center { position: relative; z-index: 1; }
+    .phone-realistic {
+      position: relative;
+      overflow: hidden;
+      background: #08060F;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.12),
+        0 0 0 2.5px #1A1330,
+        0 0 0 4px rgba(255,255,255,.06),
+        0 28px 56px rgba(0,0,0,.75),
+        0 4px 16px rgba(0,0,0,.5);
+    }
+    .phone-slot.center .phone-realistic {
+      width: 240px; height: 510px;
+      border-radius: 40px;
+    }
+    .phone-slot.side .phone-realistic {
+      width: 188px; height: 400px;
+      border-radius: 34px;
+      opacity: .72;
+      filter: brightness(.85);
+    }
+    /* subtle glow under center phone */
+    .phone-slot.center::after {
+      content: '';
+      position: absolute;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      width: 180px; height: 50px;
+      background: radial-gradient(ellipse, rgba(243,196,58,.12) 0%, transparent 70%);
+      filter: blur(14px);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .phone-screen-ph {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(160deg, #1F1930 0%, #261E3A 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phone-screen-ph span {
+      font-size: 12px; color: rgba(237,230,227,.25);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .phone-realistic video {
+      position: absolute; inset: 0; z-index: 2;
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .phone-label {
+      margin-top: 16px;
+      font-size: 11px; font-weight: 700;
+      color: rgba(237,230,227,.35);
+      letter-spacing: 1.2px; text-transform: uppercase;
+    }
+    @media (max-width: 768px) {
+      .three-phones { gap: 14px; margin-top: 52px; }
+      .phone-slot.center .phone-realistic { width: 178px; height: 378px; border-radius: 32px; }
+      .phone-slot.side .phone-realistic { width: 136px; height: 288px; border-radius: 26px; }
+    }
+    @media (max-width: 480px) {
+      .phone-slot.side { display: none; }
+      .phone-slot.center .phone-realistic { width: 200px; height: 424px; }
+    }
   </style>
 </head>
 <body>
@@ -892,37 +965,6 @@
     </p>
     <div class="hero-actions">
       <a class="btn-primary" href="https://play.google.com/store/apps/details?id=com.pinofthecrop.app" target="_blank">↓ Baixar grátis</a>
-      <a class="btn-ghost" href="#demo">Ver funcionando →</a>
-    </div>
-  </section>
-
-  <!-- O QUE É -->
-  <section class="oqueeh">
-    <div class="container">
-      <div class="oqueeh-inner reveal">
-        <span class="section-label">O que é</span>
-        <h2 class="oqueeh-title">A <em>nata</em><br>dos seus salvos.</h2>
-        <p class="oqueeh-lead">
-          Um app para quem salva tudo no Instagram e TikTok — e não encontra nada depois.<br>
-          Cole um link, a IA identifica e organiza. Sem categorizar na mão, sem digitar nada.
-        </p>
-        <div class="oqueeh-wordplay-row">
-          <div class="ety-piece">
-            <span class="ety-term">Pin</span>
-            <span class="ety-def">fixar, salvar o que importa</span>
-          </div>
-          <span class="ety-op">+</span>
-          <div class="ety-piece">
-            <span class="ety-term">of the Crop</span>
-            <span class="ety-def">cream of the crop — a nata, o melhor do melhor</span>
-          </div>
-          <span class="ety-op">=</span>
-          <div class="ety-piece ety-result">
-            <span class="ety-term">a nata da nata</span>
-            <span class="ety-def">só o que realmente vale</span>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -930,8 +972,7 @@
 
 
   <!-- HOW + DEMO -->
-  <div id="como-funciona"></div>
-  <section class="how" id="demo">
+  <section class="how" id="como-funciona">
     <div class="container">
       <div class="how-header reveal">
         <span class="section-label">Como funciona</span>
@@ -980,22 +1021,36 @@
         </div>
       </div>
 
-      <!-- DEMO BOX -->
-      <div class="demo-box reveal">
-        <h3>Experimente agora</h3>
-        <p>Cole um link de Reels ou TikTok e veja o que a IA extrai. Sem precisar baixar nada.</p>
-        <div class="demo-uses">
-          <div class="use-dot" id="dot1"></div>
-          <div class="use-dot" id="dot2"></div>
-          <span id="uses-label">2 análises gratuitas</span>
+
+      <!-- THREE PHONES -->
+      <div class="three-phones reveal">
+        <div class="phone-slot side">
+          <div class="phone-realistic">
+            <div class="phone-screen-ph"><span>Receita</span></div>
+            <video autoplay muted loop playsinline>
+              <source src="video-receita.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="phone-label">Receita</div>
         </div>
-        <div class="demo-input-row">
-          <input class="demo-input" id="demo-url" type="url" placeholder="https://www.instagram.com/reel/..." />
-          <button class="demo-btn" id="demo-btn">
-            <span id="btn-text">Analisar</span>
-          </button>
+        <div class="phone-slot center">
+          <div class="phone-realistic">
+            <div class="phone-screen-ph"><span>Filme</span></div>
+            <video autoplay muted loop playsinline>
+              <source src="video-filme.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="phone-label">Filme</div>
         </div>
-        <div class="demo-result" id="demo-result"></div>
+        <div class="phone-slot side">
+          <div class="phone-realistic">
+            <div class="phone-screen-ph"><span>Local</span></div>
+            <video autoplay muted loop playsinline>
+              <source src="video-local.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="phone-label">Local</div>
+        </div>
       </div>
     </div>
   </section>
@@ -1083,7 +1138,7 @@
       <div class="proof-track" id="proof-track">
 
         <div class="proof-card">
-          <p class="proof-text">"Finalmente consigo encontrar aquela receita que salvei 3 meses atrás. Antes ficava perdida entre centenas de posts."</p>
+          <p class="proof-text">"Cara, eu tinha umas 200 receitas salvas no Insta e nunca achava nada. Agora uso todo dia. Ontem fiz uma receita que tava salva há 3 meses sem eu achar."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#E8634A" id="avatar-ana"><img src="photos/ana.jpg" alt="Ana" onerror="this.parentElement.textContent='A'"></div>
             <div><div class="proof-name">Ana Lima</div><div class="proof-location">São Paulo, BR</div></div>
@@ -1091,7 +1146,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Uso todo dia pra filmes. Minha lista de 'assistir depois' virou uma lista real — com título, nota e tudo."</p>
+          <p class="proof-text">"É mesmo fixe. Tinha filmes guardados para ver 'mais tarde' e nunca os via. Agora tenho uma lista que presta — com título, nota e onde ver. Bué útil."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#4A6FA5" id="avatar-pedro"><img src="photos/pedro.jpg" alt="Pedro" onerror="this.parentElement.textContent='P'"></div>
             <div><div class="proof-name">Pedro Costa</div><div class="proof-location">Lisboa, PT</div></div>
@@ -1099,7 +1154,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Nunca pensei que um app de produtividade ia me fazer querer salvar mais coisas. É viciante de organizado."</p>
+          <p class="proof-text">"Uai sô, que trem bom esse app! Nunca imaginei que ia gostar tanto de organizar o que salvo. É viciante de arrumado, não consigo parar de usar."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#EC4899" id="avatar-fernanda"><img src="photos/fernanda.jpg" alt="Fernanda" onerror="this.parentElement.textContent='F'"></div>
             <div><div class="proof-name">Fernanda Rocha</div><div class="proof-location">Belo Horizonte, BR</div></div>
@@ -1107,7 +1162,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Minha namorada me mostrou o app e agora somos os dois viciados. A gente salva lugar pra ir no fim de semana e já abre no mapa na hora."</p>
+          <p class="proof-text">"Mermão, eu e a minha namorada salvamos restaurante toda semana. Antes ficava perdido no Insta, agora a gente abre direto no mapa. Facilitou demais, tá ligado?"</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#5B8A6F" id="avatar-guilherme"><img src="photos/guilherme.jpg" alt="Guilherme" onerror="this.parentElement.textContent='G'"></div>
             <div><div class="proof-name">Guilherme</div><div class="proof-location">Rio de Janeiro, BR</div></div>
@@ -1115,7 +1170,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Tinha uma lista de livros pra ler que era um desastre. Agora cada livro tem capa, sinopse e link pra comprar. Adorei."</p>
+          <p class="proof-text">"Ganda aplicação! Tinha uma lista de livros que era uma confusão do arco da velha. Agora cada livro tem capa, sinopse e link para comprar. A minja!"</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#F5A623" id="avatar-mariana"><img src="photos/mariana.jpg" alt="Mariana" onerror="this.parentElement.textContent='M'"></div>
             <div><div class="proof-name">Mariana Fonseca</div><div class="proof-location">Porto, PT</div></div>
@@ -1123,7 +1178,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"O melhor é que não precisa nem abrir o app — só compartilho o link direto do Insta e ele processa sozinho."</p>
+          <p class="proof-text">"O melhor é que nem preciso abrir o app — compartilho o link direto do Insta e ele já processa. Mostrei pro pessoal do trabalho e todo mundo baixou."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#F97316" id="avatar-thiago"><img src="photos/thiago.jpg" alt="Thiago" onerror="this.parentElement.textContent='T'"></div>
             <div><div class="proof-name">Thiago Mendes</div><div class="proof-location">Curitiba, BR</div></div>
@@ -1131,7 +1186,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Salvei um achadinho de tênis e já veio com o link da loja. Comprei na hora. Esse app me custa dinheiro mas vale demais."</p>
+          <p class="proof-text">"Vixe! Salvei um tênis lindo no Reels e já veio com o link da loja. Comprei na mesma hora. Esse app me custa dinheiro mas eu amo demais."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#EC4899" id="avatar-carol"><img src="photos/carol.jpg" alt="Carol" onerror="this.parentElement.textContent='C'"></div>
             <div><div class="proof-name">Carolina Silva</div><div class="proof-location">Salvador, BR</div></div>
@@ -1139,7 +1194,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Recomendei pra minha mãe que não entende nada de tecnologia. Ela entendeu na primeira tentativa. Muito intuitivo."</p>
+          <p class="proof-text">"Minha mãe não manja nada de tecnologia e entendeu na primeira tentativa. Recomendo pra todo mundo — muito intuitivo mesmo."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#8B5CF6" id="avatar-joao"><img src="photos/joao.jpg" alt="João" onerror="this.parentElement.textContent='J'"></div>
             <div><div class="proof-name">João Paulo</div><div class="proof-location">Brasília, BR</div></div>
@@ -1147,7 +1202,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Uso principalmente pra músicas. Ouço algo no Reels, salvo e já aparece com o link do Spotify. Simples assim."</p>
+          <p class="proof-text">"Uso bué para músicas. Ouço uma música no Reels, guardo e já aparece com o link do Spotify. Não podia ser mais fixe, é mesmo uma cena."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#06B6D4" id="avatar-sofia"><img src="photos/sofia.jpg" alt="Sofia" onerror="this.parentElement.textContent='S'"></div>
             <div><div class="proof-name">Sofia Tavares</div><div class="proof-location">Lisboa, PT</div></div>
@@ -1155,7 +1210,7 @@
         </div>
 
         <div class="proof-card">
-          <p class="proof-text">"Parece simples mas muda muito a relação com o que você consome. De scroll infinito pra uma lista que você realmente usa."</p>
+          <p class="proof-text">"Mano, parece simples mas muda muito. Saí do scroll infinito sem propósito pra ter uma lista que eu uso de verdade. Vale demais."</p>
           <div class="proof-author">
             <div class="proof-avatar" style="background:#10B981" id="avatar-lucas"><img src="photos/lucas.jpg" alt="Lucas" onerror="this.parentElement.textContent='L'"></div>
             <div><div class="proof-name">Lucas Freitas</div><div class="proof-location">São Paulo, BR</div></div>
@@ -1166,28 +1221,6 @@
     </div>
     <div class="container">
       <p class="proof-scroll-hint reveal">← arraste para ver mais →</p>
-    </div>
-  </section>
-
-  <!-- MOCKUP -->
-  <section class="mockup-section">
-    <div class="container">
-      <div class="mockup-header reveal">
-        <span class="section-label">O app em ação</span>
-        <h2>Veja como funciona<br>na <em>prática.</em></h2>
-        <p>Do link compartilhado ao card organizado em segundos.</p>
-      </div>
-      <div class="mockup-wrap reveal">
-        <div class="phone-frame">
-          <div class="phone-notch"></div>
-          <div class="phone-screen">
-            <video autoplay muted loop playsinline
-              style="width:100%;height:100%;object-fit:cover;display:block;">
-              <source src="video-app-web.mp4" type="video/mp4">
-            </video>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -1850,17 +1883,24 @@
       if (e.key === 'Enter') runDemo();
     });
 
-    // ─── PROOF CAROUSEL — Dock effect + auto-scroll + drag ───
+    // ─── PROOF CAROUSEL — Infinite loop + dock effect + drag ───
     (function() {
       var track = document.getElementById('proof-track');
       if (!track) return;
 
-      var autoSpeed   = 0.45;  // px/frame
-      var direction   = 1;
-      var isHovered   = false;
-      var isDragging  = false;
-      var dragStartX  = 0;
+      // Clone all cards for seamless infinite scroll
+      var origCards = Array.from(track.querySelectorAll('.proof-card'));
+      origCards.forEach(function(card) {
+        track.appendChild(card.cloneNode(true));
+      });
+
+      var speed      = 0.5;   // px/frame
+      var isHovered  = false;
+      var isDragging = false;
+      var dragStartX = 0;
       var dragStartSL = 0;
+
+      function halfWidth() { return track.scrollWidth / 2; }
 
       // Dock scaling
       function updateDock() {
@@ -1872,7 +1912,7 @@
           var ccx = r.left + r.width / 2;
           var dist = Math.abs(ccx - cx);
           var t   = Math.max(0, 1 - dist / (tw.width * 0.45));
-          t = t * t * (3 - 2 * t); // smoothstep
+          t = t * t * (3 - 2 * t);
           var scale   = 0.78 + t * 0.26;
           var opacity = 0.45 + t * 0.55;
           card.style.transform = 'scale(' + scale.toFixed(3) + ')';
@@ -1880,23 +1920,24 @@
         });
       }
 
-      // Auto-scroll loop
+      function wrapScroll() {
+        var h = halfWidth();
+        if (track.scrollLeft >= h) track.scrollLeft -= h;
+        if (track.scrollLeft < 0)  track.scrollLeft += h;
+      }
+
       function tick() {
         if (!isHovered && !isDragging) {
-          track.scrollLeft += autoSpeed * direction;
-          var max = track.scrollWidth - track.clientWidth;
-          if (track.scrollLeft >= max - 2) direction = -1;
-          if (track.scrollLeft <= 2)       direction =  1;
+          track.scrollLeft += speed;
+          wrapScroll();
         }
         updateDock();
         requestAnimationFrame(tick);
       }
 
-      // Hover pause
       track.addEventListener('mouseenter', function() { isHovered = true; });
       track.addEventListener('mouseleave', function() { isHovered = false; isDragging = false; });
 
-      // Mouse drag (2.5× mais rápido)
       track.addEventListener('mousedown', function(e) {
         isDragging  = true;
         dragStartX  = e.pageX;
@@ -1906,18 +1947,19 @@
       window.addEventListener('mousemove', function(e) {
         if (!isDragging) return;
         track.scrollLeft = dragStartSL - (e.pageX - dragStartX) * 2.5;
+        wrapScroll();
       });
       window.addEventListener('mouseup', function() { isDragging = false; });
 
-      // Touch
       var touchX0 = 0, touchSL0 = 0;
       track.addEventListener('touchstart', function(e) {
-        touchX0  = e.touches[0].pageX;
-        touchSL0 = track.scrollLeft;
+        touchX0   = e.touches[0].pageX;
+        touchSL0  = track.scrollLeft;
         isHovered = true;
       }, { passive: true });
       track.addEventListener('touchmove', function(e) {
         track.scrollLeft = touchSL0 + (touchX0 - e.touches[0].pageX) * 1.8;
+        wrapScroll();
       }, { passive: true });
       track.addEventListener('touchend', function() { isHovered = false; });
 
