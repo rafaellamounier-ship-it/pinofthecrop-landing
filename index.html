@@ -867,50 +867,58 @@
       .email-submit { border-radius: 12px; margin: 0 4px 4px; }
     }
 
-    /* ─── THREE PHONES ─── */
-    .three-phones {
+    /* ─── FIVE PHONES ─── */
+    .five-phones {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 24px;
+      gap: 16px;
       margin-top: 72px;
-      padding-bottom: 24px;
+      padding-bottom: 60px;
     }
-    .phone-slot { display: flex; flex-direction: column; align-items: center; }
-    .phone-slot.center { position: relative; z-index: 1; }
-    .phone-realistic {
+    .p-slot {
+      display: flex; flex-direction: column; align-items: center;
       position: relative;
-      overflow: hidden;
+    }
+    .phone-r {
+      position: relative; overflow: hidden;
       background: #08060F;
+      transition: transform .4s ease;
       box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.12),
-        0 0 0 2.5px #1A1330,
-        0 0 0 4px rgba(255,255,255,.06),
-        0 28px 56px rgba(0,0,0,.75),
-        0 4px 16px rgba(0,0,0,.5);
+        inset 0 0 0 1px rgba(255,255,255,.13),
+        0 0 0 2px #1A1330,
+        0 0 0 3.5px rgba(255,255,255,.06),
+        0 28px 60px rgba(0,0,0,.82),
+        0 4px 18px rgba(0,0,0,.55);
     }
-    .phone-slot.center .phone-realistic {
-      width: 240px; height: 510px;
-      border-radius: 40px;
-    }
-    .phone-slot.side .phone-realistic {
-      width: 188px; height: 400px;
-      border-radius: 34px;
-      opacity: .72;
-      filter: brightness(.85);
-    }
-    /* subtle glow under center phone */
-    .phone-slot.center::after {
+    /* ─ Sizes by distance from center ─ */
+    .p-slot.c0 .phone-r { width: 224px; height: 476px; border-radius: 38px; }
+    .p-slot.c1 .phone-r { width: 180px; height: 382px; border-radius: 32px; }
+    .p-slot.c2 .phone-r { width: 146px; height: 310px; border-radius: 27px; }
+    /* ─ 3D fan transforms ─ */
+    .p-slot.c0 .phone-r { transform: perspective(1200px) rotateX(5deg) rotateY(0deg); }
+    .p-slot.l1 .phone-r { transform: perspective(1200px) rotateX(3deg) rotateY(17deg) rotateZ(1.5deg); }
+    .p-slot.r1 .phone-r { transform: perspective(1200px) rotateX(3deg) rotateY(-17deg) rotateZ(-1.5deg); }
+    .p-slot.l2 .phone-r { transform: perspective(1200px) rotateX(2deg) rotateY(30deg) rotateZ(3.5deg); }
+    .p-slot.r2 .phone-r { transform: perspective(1200px) rotateX(2deg) rotateY(-30deg) rotateZ(-3.5deg); }
+    /* ─ Dimming by distance ─ */
+    .p-slot.c1 .phone-r { opacity: .78; filter: brightness(.86); }
+    .p-slot.c2 .phone-r { opacity: .52; filter: brightness(.70); }
+    /* ─ Center hover flattens ─ */
+    .p-slot.c0 .phone-r:hover { transform: perspective(1200px) rotateX(1deg) rotateY(0deg); }
+    /* ─ Glow under center ─ */
+    .p-slot.c0::after {
       content: '';
       position: absolute;
-      bottom: 28px; left: 50%;
+      bottom: 30px; left: 50%;
       transform: translateX(-50%);
-      width: 180px; height: 50px;
-      background: radial-gradient(ellipse, rgba(243,196,58,.12) 0%, transparent 70%);
-      filter: blur(14px);
+      width: 180px; height: 52px;
+      background: radial-gradient(ellipse, rgba(243,196,58,.16) 0%, transparent 70%);
+      filter: blur(16px);
       pointer-events: none;
       z-index: -1;
     }
+    /* ─ Shared inner elements ─ */
     .phone-screen-ph {
       position: absolute; inset: 0; z-index: 1;
       background: linear-gradient(160deg, #1F1930 0%, #261E3A 100%);
@@ -920,25 +928,31 @@
       font-size: 12px; color: rgba(237,230,227,.25);
       letter-spacing: 1px; text-transform: uppercase;
     }
-    .phone-realistic video {
+    .phone-r video {
       position: absolute; inset: 0; z-index: 2;
       width: 100%; height: 100%; object-fit: cover; display: block;
     }
     .phone-label {
       margin-top: 16px;
       font-size: 11px; font-weight: 700;
-      color: rgba(237,230,227,.35);
+      color: rgba(237,230,227,.32);
       letter-spacing: 1.2px; text-transform: uppercase;
     }
-    @media (max-width: 768px) {
-      .three-phones { gap: 14px; margin-top: 52px; }
-      .phone-slot.center .phone-realistic { width: 178px; height: 378px; border-radius: 32px; }
-      .phone-slot.side .phone-realistic { width: 136px; height: 288px; border-radius: 26px; }
+    /* ─ Responsive: 5 → 3 → 1 ─ */
+    @media (max-width: 1024px) {
+      .p-slot.l2, .p-slot.r2 { display: none; }
+      .p-slot.c0 .phone-r { width: 204px; height: 432px; }
+      .p-slot.c1 .phone-r { width: 160px; height: 340px; }
+      .five-phones { gap: 12px; }
     }
-    @media (max-width: 480px) {
-      .phone-slot.side { display: none; }
-      .phone-slot.center .phone-realistic { width: 200px; height: 424px; }
+    @media (max-width: 640px) {
+      .p-slot.l1, .p-slot.r1 { display: none; }
+      .p-slot.c0 .phone-r { width: 200px; height: 424px; border-radius: 36px; }
+      .five-phones { gap: 0; margin-top: 48px; }
     }
+
+    /* ─── PRO SECTION (hidden) ─── */
+    .pro-section { display: none; }
   </style>
 </head>
 <body>
@@ -947,7 +961,6 @@
     <a class="nav-logo" href="#"><img src="logo.png" alt="Pin of the Crop" /></a>
     <div class="nav-links">
       <a href="#como-funciona">Como funciona</a>
-      <a href="#pro">PRO</a>
       <a href="#email-capture">Lista de espera</a>
     </div>
     <a class="nav-cta" href="https://play.google.com/store/apps/details?id=com.pinofthecrop.app" target="_blank">Baixar grátis</a>
@@ -1022,10 +1035,19 @@
       </div>
 
 
-      <!-- THREE PHONES -->
-      <div class="three-phones reveal">
-        <div class="phone-slot side">
-          <div class="phone-realistic">
+      <!-- FIVE PHONES -->
+      <div class="five-phones reveal">
+        <div class="p-slot l2 c2">
+          <div class="phone-r">
+            <div class="phone-screen-ph"><span>Música</span></div>
+            <video autoplay muted loop playsinline>
+              <source src="video-musica.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="phone-label">Música</div>
+        </div>
+        <div class="p-slot l1 c1">
+          <div class="phone-r">
             <div class="phone-screen-ph"><span>Receita</span></div>
             <video autoplay muted loop playsinline>
               <source src="video-receita.mp4" type="video/mp4">
@@ -1033,8 +1055,8 @@
           </div>
           <div class="phone-label">Receita</div>
         </div>
-        <div class="phone-slot center">
-          <div class="phone-realistic">
+        <div class="p-slot c0">
+          <div class="phone-r">
             <div class="phone-screen-ph"><span>Filme</span></div>
             <video autoplay muted loop playsinline>
               <source src="video-filme.mp4" type="video/mp4">
@@ -1042,14 +1064,23 @@
           </div>
           <div class="phone-label">Filme</div>
         </div>
-        <div class="phone-slot side">
-          <div class="phone-realistic">
+        <div class="p-slot r1 c1">
+          <div class="phone-r">
             <div class="phone-screen-ph"><span>Local</span></div>
             <video autoplay muted loop playsinline>
               <source src="video-local.mp4" type="video/mp4">
             </video>
           </div>
           <div class="phone-label">Local</div>
+        </div>
+        <div class="p-slot r2 c2">
+          <div class="phone-r">
+            <div class="phone-screen-ph"><span>Livro</span></div>
+            <video autoplay muted loop playsinline>
+              <source src="video-livro.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="phone-label">Livro</div>
         </div>
       </div>
     </div>
