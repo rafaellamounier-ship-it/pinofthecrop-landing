@@ -138,7 +138,7 @@
   <div class="page-wrap">
     <span class="page-label">Legal</span>
     <h1>Política de Privacidade</h1>
-    <p class="page-date">Última atualização: abril de 2025</p>
+    <p class="page-date">Última atualização: maio de 2026</p>
 
     <p>
       Esta Política de Privacidade descreve como o <strong>Pin of the Crop</strong>
@@ -154,21 +154,53 @@
     <p>
       Ao instalar o app, um identificador único (UUID v4) é gerado <strong>localmente no seu
       dispositivo</strong>. Esse ID é anônimo — não está vinculado a nenhum dado pessoal
-      como nome, email, telefone ou conta de redes sociais. Ele é usado exclusivamente para:
+      como nome, email, telefone ou conta de redes sociais. Ele é usado para:
     </p>
     <ul>
       <li>Controlar limites de uso por dispositivo (ex: número de análises diárias)</li>
       <li>Evitar abusos de acesso automatizado</li>
+      <li>Associar o backup na nuvem exclusivamente ao seu dispositivo</li>
+      <li>Restaurar seus dados após reinstalação do app</li>
     </ul>
-
-    <h3>1.2 Links compartilhados</h3>
     <p>
-      Quando você analisa um link, o URL do conteúdo (Instagram ou TikTok) é enviado
-      ao nosso servidor para processamento pela IA. Esse URL é usado apenas para realizar
-      a análise e <strong>não é associado a dados pessoais identificáveis</strong>.
+      O Device ID e um token de autenticação associado são armazenados nos nossos servidores
+      (Railway, EUA) para permitir o backup e a restauração de dados.
     </p>
 
-    <h3>1.3 Dados de uso técnico (logs)</h3>
+    <h3>1.2 Links analisados</h3>
+    <p>
+      Quando você analisa um link, o URL do conteúdo (Instagram) é enviado
+      ao nosso servidor para processamento pela IA. Esse URL é usado apenas para realizar
+      a análise e <strong>não é associado a dados pessoais identificáveis</strong>.
+      O vídeo é baixado temporariamente no servidor e excluído automaticamente após o processamento.
+    </p>
+
+    <h3>1.3 Informações técnicas do dispositivo</h3>
+    <p>
+      Quando você solicita uma análise, as seguintes informações técnicas são enviadas
+      ao servidor junto com o pedido:
+    </p>
+    <ul>
+      <li><strong>Modelo do dispositivo</strong> (ex: "Samsung Galaxy S23") — para fins de diagnóstico e compatibilidade</li>
+      <li><strong>Versão do app</strong> — para identificar comportamentos por versão</li>
+      <li><strong>Plataforma</strong> (Android/iOS)</li>
+    </ul>
+    <p>Essas informações são armazenadas anonimamente nos logs de análise e não permitem identificação pessoal.</p>
+
+    <h3>1.4 Preferências opcionais</h3>
+    <p>
+      O app oferece campos opcionais para melhorar a precisão das análises:
+    </p>
+    <ul>
+      <li><strong>Cidade</strong> (texto livre, ex: "São Paulo, SP") — ajuda a distinguir restaurantes locais de destinos de viagem</li>
+      <li><strong>Nicho</strong> (texto livre, ex: "receitas veganas") — melhora a categorização de conteúdo</li>
+    </ul>
+    <p>
+      Esses dados são enviados ao servidor <strong>apenas quando você realiza uma análise</strong>
+      e incluídos no backup na nuvem associado ao seu Device ID. O preenchimento é completamente voluntário.
+    </p>
+
+    <h3>1.5 Dados de uso técnico (logs)</h3>
     <p>
       Mantemos logs técnicos mínimos para fins de diagnóstico e segurança, incluindo:
     </p>
@@ -183,48 +215,72 @@
     <ul>
       <li>Nome, email ou qualquer dado de identificação pessoal</li>
       <li>Número de telefone</li>
-      <li>Localização geográfica</li>
-      <li>Dados de perfis do Instagram ou TikTok</li>
+      <li>Localização GPS ou geolocalização precisa</li>
+      <li>Dados de perfis do Instagram (apenas o URL que você compartilha é processado)</li>
       <li>Conteúdo de contas privadas (o app só processa conteúdo público)</li>
       <li>Cookies de rastreamento ou pixels de publicidade</li>
+      <li>Contatos, câmera, microfone ou outros dados sensíveis do dispositivo</li>
     </ul>
 
-    <h2>3. Armazenamento local</h2>
+    <h2>3. Armazenamento: local e backup na nuvem</h2>
+
+    <h3>3.1 Banco de dados local</h3>
     <p>
-      Todos os itens salvos (cards de filmes, receitas, lugares, etc.) ficam armazenados
-      <strong>exclusivamente no seu dispositivo</strong>, usando um banco de dados SQLite local.
-      Nós não temos acesso à sua lista salva. Se você desinstalar o app, esses dados são
-      removidos do dispositivo.
+      Todos os itens salvos (filmes, receitas, lugares, etc.) são armazenados
+      <strong>primariamente no seu dispositivo</strong>, usando um banco de dados SQLite local.
+      O app funciona completamente offline — a nuvem é usada apenas como backup.
     </p>
 
-    <h2>4. Backend e processamento por IA</h2>
+    <h3>3.2 Backup automático na nuvem</h3>
+    <p>
+      Para proteger seus dados contra perda (desinstalação, troca de dispositivo),
+      o app realiza um <strong>backup automático</strong> nos nossos servidores (Railway, EUA), incluindo:
+    </p>
+    <ul>
+      <li>Lista completa de itens salvos (títulos, categorias, notas, tags, datas)</li>
+      <li>Imagens em miniatura (thumbnails dos reels), armazenadas como bytes permanentes</li>
+      <li>Preferências do app (tema, idioma, categorias desbloqueadas, ordenação)</li>
+      <li>Conquistas desbloqueadas (badges)</li>
+    </ul>
+    <p>
+      Esse backup é identificado exclusivamente pelo seu <strong>Device ID anônimo</strong> —
+      não há nenhum dado pessoal associado. O backup é restaurado automaticamente quando
+      você reinstala o app no mesmo dispositivo.
+    </p>
+    <p>
+      <strong>Imagens de posters</strong> (filmes, livros) e <strong>fotos de lugares</strong>
+      são obtidas de APIs externas (TMDB, Google Places) e armazenadas como URLs — os bytes
+      dessas imagens ficam nos servidores dos respectivos provedores, não nos nossos.
+    </p>
+
+    <h2>4. Backend, processamento por IA e enriquecimento de dados</h2>
     <p>
       Quando você solicita uma análise, o URL do conteúdo é enviado ao nosso servidor
       hospedado na <a href="https://railway.app" target="_blank">Railway</a> (EUA). O servidor
-      envia o vídeo para análise via <strong>Google Gemini</strong> (API de IA da Google).
+      processa o conteúdo via <strong>Google Gemini</strong> (API de IA da Google) para extrair
+      informações estruturadas (título, categoria, resumo).
       Consulte a
       <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidade da Google</a>
       para entender como os dados são tratados por essa API.
     </p>
     <p>
-      O resultado da análise (título, categoria, resumo) é retornado ao app e salvo
-      localmente no seu dispositivo. O vídeo baixado temporariamente no servidor é
-      excluído automaticamente após o processamento.
+      Para itens de categorias específicas, o app consulta APIs externas para enriquecer
+      os dados com informações adicionais (poster, avaliações, etc.). Nessas consultas,
+      apenas o <strong>título do item</strong> é enviado às APIs — nenhum dado pessoal é transmitido:
     </p>
+    <ul>
+      <li><strong>TMDB</strong> — posters e informações de filmes/séries</li>
+      <li><strong>Google Books</strong> — capas e informações de livros</li>
+      <li><strong>Google Places</strong> — fotos e informações de lugares</li>
+      <li><strong>Spotify</strong> — capas e informações de músicas</li>
+    </ul>
 
     <h2>5. Compartilhamento de dados</h2>
     <p>
       Não vendemos, alugamos nem compartilhamos seus dados com terceiros para fins
-      comerciais. Os únicos provedores externos utilizados são:
+      comerciais. Os únicos provedores externos utilizados são os listados na seção 4,
+      mais a <strong>Railway</strong> como infraestrutura de servidor.
     </p>
-    <ul>
-      <li><strong>Google Gemini</strong> — análise de vídeo por IA</li>
-      <li><strong>TMDB</strong> — enriquecimento de dados de filmes/séries</li>
-      <li><strong>Google Books</strong> — enriquecimento de dados de livros</li>
-      <li><strong>Spotify</strong> — enriquecimento de dados de músicas</li>
-      <li><strong>Google Places</strong> — enriquecimento de dados de lugares</li>
-      <li><strong>Railway</strong> — infraestrutura de servidor</li>
-    </ul>
     <p>
       Cada um desses provedores tem sua própria política de privacidade, que recomendamos
       consultar.
@@ -233,8 +289,8 @@
     <h2>6. Segurança</h2>
     <p>
       Adotamos medidas técnicas razoáveis para proteger as informações transmitidas ao
-      servidor, incluindo comunicação via HTTPS. Como o app não armazena dados pessoais
-      em servidores, o risco de exposição de dados é minimizado.
+      servidor, incluindo comunicação via HTTPS. O backup na nuvem é associado a um
+      Device ID anônimo — sem nome, email ou qualquer dado pessoal que permita identificar o utilizador.
     </p>
 
     <h2>7. Direitos do titular (LGPD)</h2>
