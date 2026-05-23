@@ -93,14 +93,13 @@
     }
     .hero h1 {
       font-family: 'DM Serif Display', serif;
-      font-size: clamp(52px, 8vw, 96px);
       line-height: 1.05; letter-spacing: -2px;
-      max-width: 800px; margin-bottom: 28px;
-      white-space: nowrap;
+      max-width: 900px; margin-bottom: 28px;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center;
     }
-    @media (max-width: 700px) {
-      .hero h1 { white-space: normal; }
-    }
+    .hero-line1 { font-size: clamp(51px, 7.9vw, 95px); }
+    .hero-line2 { font-size: clamp(46px, 7.4vw, 90px); }
     .hero h1 em { font-style: italic; color: var(--pink); }
     .hero-sub {
       font-size: clamp(16px, 2vw, 19px); font-weight: 400;
@@ -1021,7 +1020,10 @@
   <!-- HERO -->
   <section class="hero">
     <span class="hero-eyebrow">📋 Agora disponível no Android</span>
-    <h1>Seus Reels organizados<br><em>como você nunca imaginou.</em></h1>
+    <h1>
+      <span class="hero-line1">Seus Reels organizados</span>
+      <span class="hero-line2"><em>como você nunca imaginou</em></span>
+    </h1>
     <p class="hero-sub">
       Cole qualquer link do Instagram ou TikTok.
       A IA analisa e cria um <strong>card organizado por categoria.</strong> Pronto pra você usar de verdade.
