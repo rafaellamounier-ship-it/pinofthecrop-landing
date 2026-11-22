@@ -65,6 +65,11 @@
   .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-top:8px}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
   #kbinfo{font-family:var(--mono);font-size:13px;margin-top:8px;min-height:20px}
+  .wk.target,.bk.target{outline:3px solid #a78bfa;outline-offset:-3px;z-index:4}
+  #verdict{margin-top:12px;font-size:15px;font-weight:600;min-height:24px}
+  #verdict span{font-weight:400;font-size:13px;color:var(--dim);display:block}
+  .stab{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:8px}
+  .stabfill{height:100%;width:0;background:var(--accent);transition:width .1s linear}
 </style>
 </head>
 <body>
@@ -135,8 +140,9 @@
 <!-- ============ MIC ============ -->
 <section id="paneMic" class="hide">
   <div class="panel">
-    <div class="row" style="justify-content:space-between">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
       <div>
+        <div class="hz" id="mMode">alvo: nenhum (modo livre)</div>
         <div class="big" id="mNote">—<small id="mLatin"></small></div>
         <div class="hz" id="mHz">aguardando som</div>
       </div>
@@ -147,8 +153,13 @@
     </div>
     <div class="meter"><div class="tick" style="left:25%"></div><div class="tick" style="left:75%"></div><div class="mid"></div><div class="needle" id="needle"></div></div>
     <div class="scalelbl"><span>-50</span><span>0</span><span>+50</span></div>
+    <div id="verdict">Selecione uma tecla no mapa acima e toque ela.</div>
+    <div class="stab"><div class="stabfill" id="stabFill"></div></div>
     <div class="row" style="margin-top:14px">
       <button class="primary" id="micBtn">Ligar microfone</button>
+      <button id="clearTarget">Modo livre</button>
+      <button id="nextKey">Próxima tecla ›</button>
+      <button id="calib">Calibrar ruído</button>
     </div>
     <div class="note" id="micMsg"></div>
   </div>
@@ -196,7 +207,7 @@ function buildKeyboard(){
       }
       w++;
     }
-    el.onclick = ()=> showKey(m);
+    el.onclick = ()=> selectKey(m);
     keyEls[m] = el; kb.appendChild(el);
   }
   kb.style.width = (w*W) + 'px';
@@ -450,8 +461,53 @@ $('copy').onclick = async ()=>{
   setTimeout(()=>$('copied').textContent='',2500);
 };
 
-/* ---------- modo microfone ---------- */
-let micCtx=null, micStream=null, running=false, hist=[];
+/* ---------- modo microfone: alvo + porta de ruído ---------- */
+let micCtx=null, micStream=null, running=false;
+let analyser=null, micBuf=null;
+let targetMidi=null, noiseGate=0.012, samples=[], locked=false, lastLoud=0;
+
+const freqOf = m => A4()*Math.pow(2,(m-69)/12);
+const median = a => { const s=[...a].sort((x,y)=>x-y); return s[Math.floor(s.length/2)]; };
+const nameOf = m => NAMES[m%12] + (Math.floor(m/12)-1);
+const latinOf = m => LATIN[m%12] + (Math.floor(m/12)-1);
+
+function selectKey(m){
+  targetMidi = m;
+  for (const k in keyEls) keyEls[k].classList.toggle('target', +k === m);
+  $('mMode').textContent = 'alvo: ' + nameOf(m) + ' (' + latinOf(m) + ') · ' + freqOf(m).toFixed(2) + ' Hz';
+  showKey(m);
+  resetMeasure();
+  $('verdict').innerHTML = running ? 'Toque a tecla ' + nameOf(m) + '.'
+                                   : 'Ligue o microfone e toque a tecla ' + nameOf(m) + '.';
+  keyEls[m].scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+}
+function resetMeasure(){ samples=[]; locked=false; $('stabFill').style.width='0'; }
+
+$('clearTarget').onclick = ()=>{
+  targetMidi = null;
+  for (const k in keyEls) keyEls[k].classList.remove('target');
+  $('mMode').textContent = 'alvo: nenhum (modo livre)';
+  $('verdict').textContent = 'Modo livre: identifica qualquer nota tocada.';
+  resetMeasure();
+};
+$('nextKey').onclick = ()=>{ if (targetMidi && targetMidi < 108) selectKey(targetMidi+1); };
+$('calib').onclick = async ()=>{
+  if (!running){ $('micMsg').textContent = 'Ligue o microfone primeiro.'; return; }
+  $('micMsg').textContent = 'Medindo ruído do ambiente, fique em silêncio por 2s…';
+  const vals=[]; const t0=performance.now();
+  await new Promise(res=>{
+    (function m(){
+      analyser.getFloatTimeDomainData(micBuf);
+      let r=0; for(let i=0;i<micBuf.length;i++) r+=micBuf[i]*micBuf[i];
+      vals.push(Math.sqrt(r/micBuf.length));
+      performance.now()-t0 < 2000 ? requestAnimationFrame(m) : res();
+    })();
+  });
+  const amb = median(vals);
+  noiseGate = Math.max(0.006, amb*3);
+  $('micMsg').textContent = 'Ruído de fundo: ' + amb.toFixed(4) + ' · porta ajustada para ' + noiseGate.toFixed(4) + '.';
+};
+
 $('micBtn').onclick = async ()=>{
   if (running){ stopMic(); return; }
   $('micMsg').textContent = 'pedindo acesso ao microfone…';
@@ -464,46 +520,112 @@ $('micBtn').onclick = async ()=>{
   }
   micCtx = new (window.AudioContext||window.webkitAudioContext)();
   const src = micCtx.createMediaStreamSource(micStream);
-  const an = micCtx.createAnalyser();
-  an.fftSize = 4096;
-  src.connect(an);
-  const buf = new Float32Array(an.fftSize);
-  running = true; hist=[];
+  analyser = micCtx.createAnalyser();
+  analyser.fftSize = 4096;
+  src.connect(analyser);
+  micBuf = new Float32Array(analyser.fftSize);
+  running = true; resetMeasure();
   $('micBtn').textContent = 'Parar'; $('micBtn').classList.remove('primary');
-  $('micMsg').textContent = 'Toque uma tecla por vez. Leitura estabiliza em ~1s.';
-
-  (function loop(){
-    if(!running) return;
-    an.getFloatTimeDomainData(buf);
-    const p = detectPitch(buf, micCtx.sampleRate, 24, 2500);
-    if (p){
-      hist.push(p.freq); if (hist.length>8) hist.shift();
-      const s=[...hist].sort((a,b)=>a-b);
-      const f=s[Math.floor(s.length/2)];
-      const nn=noteOf(f, A4());
-      $('mNote').innerHTML = nn.name + '<small> ' + nn.latin + '</small>';
-      $('mHz').textContent = f.toFixed(2) + ' Hz';
-      $('mCents').textContent = (nn.cents>=0?'+':'') + nn.cents.toFixed(1);
-      $('mCents').className = 'big ' + cls(nn.cents);
-      const needle=$('needle');
-      needle.style.left = (50 + Math.max(-50,Math.min(50,nn.cents))) + '%';
-      needle.style.background = col(nn.cents);
-      setLiveKey(nn.midi);
-      $('kbinfo').innerHTML = `<b>${nn.name}</b> (${nn.latin}) — ${f.toFixed(2)} Hz — <b class="${cls(nn.cents)}">${nn.cents>=0?'+':''}${nn.cents.toFixed(1)} cents</b>`;
-    } else {
-      hist=[]; $('mHz').textContent='aguardando som';
-    }
-    requestAnimationFrame(loop);
-  })();
+  $('micMsg').textContent = 'Dica: toque "Calibrar ruído" uma vez no ambiente onde vai afinar.';
+  requestAnimationFrame(tick);
 };
+
+const NEED = 14;            // leituras válidas para travar
+const WINDOW_MS = 1600;     // janela de leituras
+const MAX_OFF = 150;        // cents fora do alvo => som alheio, ignora
+
+function tick(){
+  if (!running) return;
+  analyser.getFloatTimeDomainData(micBuf);
+  const now = performance.now();
+
+  let r=0; for (let i=0;i<micBuf.length;i++) r+=micBuf[i]*micBuf[i];
+  const rms = Math.sqrt(r/micBuf.length);
+
+  // porta de ruído: abaixo disso é ambiente, não nota
+  if (rms < noiseGate){
+    if (now - lastLoud > 800){
+      if (locked) locked = false;      // libera para a próxima batida
+      if (samples.length){ samples=[]; $('stabFill').style.width='0'; }
+      $('mHz').textContent = 'aguardando nota';
+    }
+    return requestAnimationFrame(tick);
+  }
+  lastLoud = now;
+  if (locked) return requestAnimationFrame(tick);   // já mediu, espera soltar
+
+  const p = detectPitch(micBuf, micCtx.sampleRate, 24, 2500);
+  if (!p || p.conf < 0.88) return requestAnimationFrame(tick);
+
+  let f = p.freq, dev, midi;
+  if (targetMidi){
+    const tf = freqOf(targetMidi);
+    while (f/tf > 1.5) f /= 2;          // ignora oitava/harmônico detectado
+    while (tf/f > 1.5) f *= 2;
+    dev = 1200*Math.log2(f/tf);
+    if (Math.abs(dev) > MAX_OFF) return requestAnimationFrame(tick);  // não é a tecla alvo
+    midi = targetMidi;
+  } else {
+    const nn = noteOf(f, A4());
+    dev = nn.cents; midi = nn.midi;
+    if (samples.length && samples[samples.length-1].midi !== midi) samples = [];  // nota mudou
+  }
+
+  samples.push({t:now, c:dev, f, midi});
+  samples = samples.filter(s => now - s.t < WINDOW_MS);
+  $('stabFill').style.width = Math.min(100, 100*samples.length/NEED) + '%';
+
+  const mc = median(samples.map(s=>s.c)), mf = median(samples.map(s=>s.f));
+  showLive(midi, mf, mc);
+
+  if (samples.length >= NEED){
+    const cs = samples.map(s=>s.c).sort((a,b)=>a-b);
+    const spread = cs[cs.length-1] - cs[0];
+    if (spread < 14) lockReading(midi, mf, mc, spread);
+    else if (samples.length >= NEED*1.8) unstable(spread);
+  }
+  requestAnimationFrame(tick);
+}
+
+function showLive(midi, f, cents){
+  $('mNote').innerHTML = nameOf(midi) + '<small> ' + latinOf(midi) + '</small>';
+  $('mHz').textContent = f.toFixed(2) + ' Hz';
+  $('mCents').textContent = (cents>=0?'+':'') + cents.toFixed(1);
+  $('mCents').className = 'big ' + cls(cents);
+  const n = $('needle');
+  n.style.left = (50 + Math.max(-50, Math.min(50, cents))) + '%';
+  n.style.background = col(cents);
+  setLiveKey(midi);
+}
+
+function lockReading(midi, f, cents, spread){
+  locked = true;
+  const a = Math.abs(cents);
+  let txt;
+  if (a <= TOL()) txt = 'Afinada';
+  else if (a <= 12) txt = cents > 0 ? 'Levemente alta' : 'Levemente baixa';
+  else txt = cents > 0 ? 'Alta' : 'Baixa';
+  $('verdict').innerHTML = `<b class="${cls(cents)}">${nameOf(midi)}: ${txt} — ${cents>=0?'+':''}${cents.toFixed(1)} cents</b>`
+    + `<span>${f.toFixed(2)} Hz · alvo ${freqOf(midi).toFixed(2)} Hz · estabilidade ±${(spread/2).toFixed(1)} cents</span>`;
+  measured[midi] = {midi, freq:f, cents, name:nameOf(midi), latin:latinOf(midi)};
+  if (keyEls[midi]) keyEls[midi].style.background = col(cents);
+  showKey(midi);
+  $('stabFill').style.width = '100%';
+}
+
+function unstable(spread){
+  locked = true;
+  $('verdict').innerHTML = `<b class="warn">Leitura instável (±${(spread/2).toFixed(1)} cents)</b>`
+    + `<span>Em piano isso costuma ser unissono desalinhado: as 2 ou 3 cordas da tecla afinadas entre si com diferença. Também pode ser ruído do ambiente — tente calibrar.</span>`;
+}
 function stopMic(){
-  running=false;
+  running=false; resetMeasure();
   if(micStream) micStream.getTracks().forEach(t=>t.stop());
   if(micCtx) micCtx.close();
-  micStream=micCtx=null;
+  micStream=micCtx=analyser=null;
   $('micBtn').textContent='Ligar microfone'; $('micBtn').classList.add('primary');
   $('mNote').innerHTML='—'; $('mHz').textContent='parado'; $('mCents').textContent='—';
-  $('needle').style.left='50%';
+  $('mCents').className='big'; $('needle').style.left='50%';
 }
 
 /* ---------- tabs ---------- */
