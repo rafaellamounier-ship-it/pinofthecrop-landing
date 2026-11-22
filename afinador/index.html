@@ -54,6 +54,17 @@
   .kpis{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;margin-bottom:10px}
   .kpis div span{color:var(--dim);font-size:11px;display:block;text-transform:uppercase;letter-spacing:.04em;font-family:-apple-system,sans-serif}
   progress{width:100%;height:6px;accent-color:var(--accent)}
+  .kbwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+  .kb{position:relative;height:104px;user-select:none}
+  .wk,.bk{position:absolute;top:0;cursor:pointer}
+  .wk{height:104px;background:#20242b;border:1px solid #2f353e;border-top:none;border-radius:0 0 4px 4px}
+  .bk{height:64px;background:#0a0c0f;border:1px solid #000;border-top:none;border-radius:0 0 3px 3px;z-index:2}
+  .wk .lbl{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:8px;
+    color:#6b7280;font-family:var(--mono)}
+  .wk.live,.bk.live{outline:2px solid var(--accent);outline-offset:-2px;z-index:3}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-top:8px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  #kbinfo{font-family:var(--mono);font-size:13px;margin-top:8px;min-height:20px}
 </style>
 </head>
 <body>
@@ -77,6 +88,17 @@
 <div class="tabs">
   <button id="tabFile" class="on">Arquivo de áudio</button>
   <button id="tabMic">Microfone ao vivo</button>
+</div>
+
+<div class="panel">
+  <div class="kbwrap"><div class="kb" id="kb"></div></div>
+  <div id="kbinfo">Toque numa tecla para ver a medição.</div>
+  <div class="legend">
+    <span><i style="background:#3fcf8e"></i>dentro da tolerância</span>
+    <span><i style="background:#e8b84b"></i>até 15 cents</span>
+    <span><i style="background:#ec5f5f"></i>acima de 15 cents</span>
+    <span><i style="background:#20242b;border:1px solid #2f353e"></i>não medida</span>
+  </div>
 </div>
 
 <!-- ============ ARQUIVO ============ -->
@@ -148,6 +170,64 @@ function noteOf(f, a4){
 }
 const cls = c => Math.abs(c)<=TOL() ? 'ok' : (Math.abs(c)<=15 ? 'warn' : 'bad');
 const col = c => Math.abs(c)<=TOL() ? '#3fcf8e' : (Math.abs(c)<=15 ? '#e8b84b' : '#ec5f5f');
+
+/* ---------- mapa do teclado (88 teclas, A0=21 a C8=108) ---------- */
+const BLACK = [1,3,6,8,10];
+const keyEls = {};
+let measured = {};   // midi -> linha medida
+function buildKeyboard(){
+  const kb = $('kb'); kb.innerHTML='';
+  const W = 23, BW = 14;
+  let w = 0;
+  for (let m=21; m<=108; m++){
+    const pc = m%12, isBlack = BLACK.includes(pc);
+    const el = document.createElement('div');
+    el.className = isBlack ? 'bk' : 'wk';
+    if (isBlack){
+      el.style.left = (w*W - BW/2) + 'px';
+      el.style.width = BW + 'px';
+    } else {
+      el.style.left = (w*W) + 'px';
+      el.style.width = W + 'px';
+      if (pc === 0){
+        const l = document.createElement('div');
+        l.className='lbl'; l.textContent = 'C'+(Math.floor(m/12)-1);
+        el.appendChild(l);
+      }
+      w++;
+    }
+    el.onclick = ()=> showKey(m);
+    keyEls[m] = el; kb.appendChild(el);
+  }
+  kb.style.width = (w*W) + 'px';
+}
+function paintKeyboard(rows){
+  measured = {};
+  for (const r of rows){
+    if (!measured[r.midi] || Math.abs(r.cents) > Math.abs(measured[r.midi].cents)) measured[r.midi] = r;
+  }
+  for (const m in keyEls){
+    const el = keyEls[m], r = measured[m];
+    el.style.background = r ? col(r.cents) : (BLACK.includes(m%12) ? '#0a0c0f' : '#20242b');
+  }
+}
+function showKey(m){
+  const r = measured[m];
+  const nm = NAMES[m%12] + (Math.floor(m/12)-1), lt = LATIN[m%12] + (Math.floor(m/12)-1);
+  $('kbinfo').innerHTML = r
+    ? `<b>${nm}</b> (${lt}) — ${r.freq.toFixed(2)} Hz — <b class="${cls(r.cents)}">${r.cents>=0?'+':''}${r.cents.toFixed(1)} cents</b>`
+    : `<b>${nm}</b> (${lt}) — <span style="color:var(--dim)">não medida</span>`;
+}
+let liveKey = null;
+function setLiveKey(m){
+  if (liveKey === m) return;
+  if (liveKey && keyEls[liveKey]) keyEls[liveKey].classList.remove('live');
+  liveKey = m;
+  if (m && keyEls[m]){
+    keyEls[m].classList.add('live');
+    keyEls[m].scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+  }
+}
 
 /* ---------- detecção de pitch: autocorrelação normalizada ---------- */
 function detectPitch(buf, sr, fmin, fmax){
@@ -315,6 +395,7 @@ function render(rows){
   $('tbl').innerHTML = html + '</tbody>';
 
   drawChart(rows);
+  paintKeyboard(rows);
 }
 
 function drawChart(rows){
@@ -407,6 +488,8 @@ $('micBtn').onclick = async ()=>{
       const needle=$('needle');
       needle.style.left = (50 + Math.max(-50,Math.min(50,nn.cents))) + '%';
       needle.style.background = col(nn.cents);
+      setLiveKey(nn.midi);
+      $('kbinfo').innerHTML = `<b>${nn.name}</b> (${nn.latin}) — ${f.toFixed(2)} Hz — <b class="${cls(nn.cents)}">${nn.cents>=0?'+':''}${nn.cents.toFixed(1)} cents</b>`;
     } else {
       hist=[]; $('mHz').textContent='aguardando som';
     }
@@ -429,6 +512,7 @@ $('tabFile').onclick = ()=>{ $('tabFile').classList.add('on'); $('tabMic').class
 $('tabMic').onclick = ()=>{ $('tabMic').classList.add('on'); $('tabFile').classList.remove('on');
   $('paneMic').classList.remove('hide'); $('paneFile').classList.add('hide'); };
 
+buildKeyboard();
 $('a4').onchange = $('tol').onchange = ()=>{ if(lastRows.length) render(lastRows); };
 window.addEventListener('resize', ()=> lastRows.length && drawChart(lastRows));
 </script>
