@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afinação de Piano</title>
+<style>
+  :root{
+    --bg:#0e1013; --panel:#16191e; --panel2:#1d2127; --line:#2a2f37;
+    --text:#e7e9ec; --dim:#9aa2ad; --ok:#3fcf8e; --warn:#e8b84b; --bad:#ec5f5f; --accent:#7aa2f7;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:15px;line-height:1.5;padding:16px 14px 60px;max-width:860px;margin:0 auto}
+  h1{font-size:19px;margin:0 0 4px;font-weight:600;letter-spacing:-.01em}
+  .sub{color:var(--dim);font-size:13px;margin:0 0 18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+  label{font-size:12px;color:var(--dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+  input[type=number]{background:var(--panel2);border:1px solid var(--line);color:var(--text);
+    border-radius:8px;padding:8px 10px;font:inherit;width:110px;font-family:var(--mono)}
+  button{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:9px;
+    padding:10px 16px;font:inherit;cursor:pointer}
+  button:hover{border-color:#3b424d}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#0e1013;font-weight:600}
+  button:disabled{opacity:.45;cursor:default}
+  .row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .tabs{display:flex;gap:6px;margin-bottom:14px}
+  .tabs button{flex:1;padding:9px 8px;font-size:14px}
+  .tabs button.on{background:var(--panel2);border-color:var(--accent);color:var(--text)}
+  .drop{border:1.5px dashed var(--line);border-radius:12px;padding:26px 14px;text-align:center;color:var(--dim);font-size:14px}
+  .drop.over{border-color:var(--accent);color:var(--text)}
+  .big{font-family:var(--mono);font-size:62px;line-height:1;font-weight:600;letter-spacing:-.02em}
+  .big small{font-size:18px;color:var(--dim);font-weight:400;letter-spacing:0}
+  .hz{font-family:var(--mono);color:var(--dim);font-size:13px}
+  .meter{position:relative;height:30px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:8px;margin:12px 0 4px;overflow:hidden}
+  .meter .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#4b5563}
+  .meter .tick{position:absolute;top:0;bottom:0;width:1px;background:#262b33}
+  .meter .needle{position:absolute;top:3px;bottom:3px;width:4px;border-radius:2px;background:var(--ok);
+    left:50%;transform:translateX(-2px);transition:left .07s linear,background .15s}
+  .scalelbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--dim)}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{color:var(--dim);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  td.n{text-align:right}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .bar{display:inline-block;height:9px;border-radius:2px;vertical-align:middle}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .note{font-size:13px;color:var(--dim);margin-top:10px}
+  .hide{display:none}
+  canvas{width:100%;height:220px;display:block}
+  .kpis{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;margin-bottom:10px}
+  .kpis div span{color:var(--dim);font-size:11px;display:block;text-transform:uppercase;letter-spacing:.04em;font-family:-apple-system,sans-serif}
+  progress{width:100%;height:6px;accent-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<h1>Afinação de Piano</h1>
+<p class="sub">Detecta a frequência de cada nota e mostra o desvio em cents. Lembre: piano bem afinado tem stretch (graves abaixo, agudos acima) — desvio nos extremos pode ser correto.</p>
+
+<div class="panel">
+  <div class="row">
+    <div>
+      <label>Referência A4 (Hz)</label>
+      <input type="number" id="a4" value="440" min="390" max="470" step="0.1">
+    </div>
+    <div>
+      <label>Tolerância verde (cents)</label>
+      <input type="number" id="tol" value="5" min="1" max="30" step="1">
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button id="tabFile" class="on">Arquivo de áudio</button>
+  <button id="tabMic">Microfone ao vivo</button>
+</div>
+
+<!-- ============ ARQUIVO ============ -->
+<section id="paneFile">
+  <div class="panel">
+    <div class="drop" id="drop">
+      Toque aqui para escolher o áudio<br>
+      <span style="font-size:12px">(ou arraste o arquivo) — wav, mp3, m4a, ogg</span>
+      <input type="file" id="file" accept="audio/*" class="hide">
+    </div>
+    <div class="note">Grave tocando <b>uma tecla por vez</b>, deixando a nota soar ~1s e um pequeno silêncio entre elas. Celular a ~30cm, longe de ventilador e ar-condicionado.</div>
+  </div>
+
+  <div class="panel hide" id="progPanel">
+    <div id="progTxt" class="hz">decodificando…</div>
+    <progress id="prog" max="100" value="0"></progress>
+  </div>
+
+  <div class="panel hide" id="resPanel">
+    <div class="kpis" id="kpis"></div>
+    <canvas id="chart"></canvas>
+    <div class="note">Cada ponto é uma nota detectada. Acima de zero = alto, abaixo = baixo. A inclinação geral dos extremos é o stretch esperado, o que interessa são os pontos que fogem dos vizinhos.</div>
+  </div>
+
+  <div class="panel hide" id="tablePanel">
+    <div class="tablewrap"><table id="tbl"></table></div>
+    <div class="row" style="margin-top:12px">
+      <button id="copy">Copiar como CSV</button>
+      <span id="copied" class="hz"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MIC ============ -->
+<section id="paneMic" class="hide">
+  <div class="panel">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <div class="big" id="mNote">—<small id="mLatin"></small></div>
+        <div class="hz" id="mHz">aguardando som</div>
+      </div>
+      <div style="text-align:right">
+        <div class="big" id="mCents" style="font-size:40px">—</div>
+        <div class="hz">cents</div>
+      </div>
+    </div>
+    <div class="meter"><div class="tick" style="left:25%"></div><div class="tick" style="left:75%"></div><div class="mid"></div><div class="needle" id="needle"></div></div>
+    <div class="scalelbl"><span>-50</span><span>0</span><span>+50</span></div>
+    <div class="row" style="margin-top:14px">
+      <button class="primary" id="micBtn">Ligar microfone</button>
+    </div>
+    <div class="note" id="micMsg"></div>
+  </div>
+</section>
+
+<script>
+const NAMES =['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const LATIN =['Dó','Dó#','Ré','Ré#','Mi','Fá','Fá#','Sol','Sol#','Lá','Lá#','Si'];
+const $ = id => document.getElementById(id);
+const A4 = () => parseFloat($('a4').value) || 440;
+const TOL = () => parseFloat($('tol').value) || 5;
+
+function noteOf(f, a4){
+  const m = 12*Math.log2(f/a4) + 69;
+  const midi = Math.round(m);
+  return {midi, cents:(m-midi)*100,
+          name:NAMES[((midi%12)+12)%12] + (Math.floor(midi/12)-1),
+          latin:LATIN[((midi%12)+12)%12] + (Math.floor(midi/12)-1)};
+}
+const cls = c => Math.abs(c)<=TOL() ? 'ok' : (Math.abs(c)<=15 ? 'warn' : 'bad');
+const col = c => Math.abs(c)<=TOL() ? '#3fcf8e' : (Math.abs(c)<=15 ? '#e8b84b' : '#ec5f5f');
+
+/* ---------- detecção de pitch: autocorrelação normalizada ---------- */
+function detectPitch(buf, sr, fmin, fmax){
+  const N = buf.length;
+  let mean=0; for(let i=0;i<N;i++) mean+=buf[i]; mean/=N;
+  const b = new Float32Array(N);
+  let rms=0;
+  for(let i=0;i<N;i++){ b[i]=buf[i]-mean; rms+=b[i]*b[i]; }
+  rms = Math.sqrt(rms/N);
+  if (rms < 0.004) return null;
+
+  const minLag = Math.max(2, Math.floor(sr/fmax));
+  const maxLag = Math.min(Math.floor(sr/fmin), Math.floor(N/2));
+  if (maxLag <= minLag) return null;
+
+  const corr = new Float32Array(maxLag+2);
+  let gmax = -1;
+  for (let lag=minLag; lag<=maxLag; lag++){
+    let s=0,e1=0,e2=0;
+    const lim = N-lag;
+    for (let i=0;i<lim;i++){ const x=b[i], y=b[i+lag]; s+=x*y; e1+=x*x; e2+=y*y; }
+    const v = s/Math.sqrt(e1*e2+1e-12);
+    corr[lag]=v;
+    if (v>gmax) gmax=v;
+  }
+  if (gmax < 0.5) return null;
+
+  // menor lag com correlação próxima do máximo => evita erro de oitava pra baixo
+  let lag=-1;
+  for (let L=minLag; L<=maxLag; L++){
+    if (corr[L] >= 0.93*gmax && corr[L] > corr[L-1] && corr[L] >= corr[L+1]){ lag=L; break; }
+  }
+  if (lag<0) return null;
+
+  const x1=corr[lag-1], x2=corr[lag], x3=corr[lag+1];
+  const a=(x1+x3-2*x2)/2, d=(x3-x1)/2;
+  const refined = a ? lag - d/(2*a) : lag;
+  return {freq: sr/refined, conf: gmax, rms};
+}
+
+/* ---------- modo arquivo ---------- */
+const drop=$('drop'), fileIn=$('file');
+drop.onclick = ()=> fileIn.click();
+drop.ondragover = e=>{e.preventDefault();drop.classList.add('over')};
+drop.ondragleave = ()=> drop.classList.remove('over');
+drop.ondrop = e=>{e.preventDefault();drop.classList.remove('over');
+  if(e.dataTransfer.files[0]) handle(e.dataTransfer.files[0]);};
+fileIn.onchange = ()=> fileIn.files[0] && handle(fileIn.files[0]);
+
+let lastRows = [];
+
+async function handle(file){
+  $('progPanel').classList.remove('hide');
+  $('resPanel').classList.add('hide'); $('tablePanel').classList.add('hide');
+  $('progTxt').textContent = 'decodificando ' + file.name + '…';
+  $('prog').value = 0;
+  await new Promise(r=>setTimeout(r,30));
+  let audio;
+  try{
+    const ab = await file.arrayBuffer();
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    audio = await ctx.decodeAudioData(ab);
+    ctx.close();
+  }catch(err){
+    $('progTxt').textContent = 'não consegui decodificar esse arquivo ('+(err.message||err)+'). Tente wav ou m4a.';
+    return;
+  }
+  // mono
+  const chs = audio.numberOfChannels, len = audio.length;
+  const mono = new Float32Array(len);
+  for(let c=0;c<chs;c++){ const d=audio.getChannelData(c); for(let i=0;i<len;i++) mono[i]+=d[i]/chs; }
+  // downsample ~16k
+  const target = 16000, sr0 = audio.sampleRate;
+  const factor = Math.max(1, Math.floor(sr0/target));
+  const sr = sr0/factor;
+  const n = Math.floor(len/factor);
+  const sig = new Float32Array(n);
+  for(let i=0;i<n;i++){ let s=0; for(let k=0;k<factor;k++) s+=mono[i*factor+k]; sig[i]=s/factor; }
+
+  const FRAME = 2048, HOP = 512;
+  const frames = Math.floor((n-FRAME)/HOP);
+  const det = [];
+  $('progTxt').textContent = 'analisando ' + (len/sr0).toFixed(1) + 's de áudio…';
+
+  for(let f=0; f<frames; f++){
+    if (f % 40 === 0){ $('prog').value = 100*f/frames; await new Promise(r=>setTimeout(r)); }
+    const seg = sig.subarray(f*HOP, f*HOP+FRAME);
+    const p = detectPitch(seg, sr, 24, 2500);
+    det.push(p ? {t:(f*HOP)/sr, f:p.freq, c:p.conf, rms:p.rms} : null);
+  }
+  $('prog').value = 100;
+
+  // agrupa frames consecutivos com pitch estável em eventos de nota
+  const events=[]; let cur=null;
+  const centsDiff = (a,b)=> 1200*Math.log2(a/b);
+  for(const d of det){
+    if (!d){ if(cur && cur.list.length) { events.push(cur); cur=null; } continue; }
+    if (cur && Math.abs(centsDiff(d.f, cur.ref)) < 60){
+      cur.list.push(d); cur.end=d.t;
+      cur.ref = cur.list[Math.floor(cur.list.length/2)].f;
+    } else {
+      if (cur && cur.list.length) events.push(cur);
+      cur = {start:d.t, end:d.t, ref:d.f, list:[d]};
+    }
+  }
+  if (cur && cur.list.length) events.push(cur);
+
+  const minFrames = Math.ceil(0.18*sr/HOP);
+  const rows=[];
+  for(const ev of events){
+    if (ev.list.length < minFrames) continue;
+    // usa o miolo do evento (ataque do piano é instável)
+    const a = Math.floor(ev.list.length*0.25), b = Math.ceil(ev.list.length*0.85);
+    const mid = ev.list.slice(a,b);
+    if (!mid.length) continue;
+    const fs = mid.map(d=>d.f).sort((x,y)=>x-y);
+    const freq = fs[Math.floor(fs.length/2)];
+    const spread = 1200*Math.log2(fs[fs.length-1]/fs[0]);
+    const nn = noteOf(freq, A4());
+    if (nn.midi < 20 || nn.midi > 110) continue;
+    rows.push({t:ev.start, dur:ev.end-ev.start, freq, ...nn, spread, conf:mid.reduce((s,d)=>s+d.c,0)/mid.length});
+  }
+
+  lastRows = rows;
+  $('progPanel').classList.add('hide');
+  render(rows);
+}
+
+function render(rows){
+  if(!rows.length){
+    $('resPanel').classList.remove('hide');
+    $('kpis').innerHTML = '<div>Nenhuma nota detectada. Áudio muito baixo, muito curto ou com muito ruído.</div>';
+    $('chart').classList.add('hide');
+    return;
+  }
+  $('chart').classList.remove('hide');
+  $('resPanel').classList.remove('hide');
+  $('tablePanel').classList.remove('hide');
+
+  const cents = rows.map(r=>r.cents);
+  const avg = cents.reduce((a,b)=>a+b,0)/cents.length;
+  const worst = rows.reduce((m,r)=> Math.abs(r.cents)>Math.abs(m.cents)?r:m, rows[0]);
+  const impliedA4 = A4()*Math.pow(2, avg/1200);
+  const okCount = cents.filter(c=>Math.abs(c)<=TOL()).length;
+
+  $('kpis').innerHTML = `
+    <div><span>Notas detectadas</span>${rows.length}</div>
+    <div><span>Dentro da tolerância</span>${okCount} (${Math.round(100*okCount/rows.length)}%)</div>
+    <div><span>Desvio médio</span><b class="${cls(avg)}">${avg>=0?'+':''}${avg.toFixed(1)} cents</b></div>
+    <div><span>A4 implícito</span>${impliedA4.toFixed(1)} Hz</div>
+    <div><span>Maior desvio</span><b class="${cls(worst.cents)}">${worst.name} ${worst.cents>=0?'+':''}${worst.cents.toFixed(1)}</b></div>`;
+
+  // tabela
+  let html = '<thead><tr><th>#</th><th>t (s)</th><th>Nota</th><th>Nome</th><th class="n">Hz</th><th class="n">Cents</th><th>Desvio</th><th class="n">Estab.</th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{
+    const w = Math.min(50, Math.abs(r.cents))/50*60;
+    const bar = r.cents>=0
+      ? `<span style="display:inline-block;width:62px"></span><span class="bar" style="width:${w}px;background:${col(r.cents)}"></span>`
+      : `<span style="display:inline-block;width:${62-w}px"></span><span class="bar" style="width:${w}px;background:${col(r.cents)}"></span>`;
+    html += `<tr><td>${i+1}</td><td>${r.t.toFixed(2)}</td><td><b>${r.name}</b></td><td>${r.latin}</td>
+      <td class="n">${r.freq.toFixed(2)}</td>
+      <td class="n ${cls(r.cents)}"><b>${r.cents>=0?'+':''}${r.cents.toFixed(1)}</b></td>
+      <td>${bar}</td><td class="n" style="color:var(--dim)">±${(r.spread/2).toFixed(1)}</td></tr>`;
+  });
+  $('tbl').innerHTML = html + '</tbody>';
+
+  drawChart(rows);
+}
+
+function drawChart(rows){
+  const cv = $('chart'), dpr = window.devicePixelRatio||1;
+  const W = cv.clientWidth, H = 220;
+  cv.width = W*dpr; cv.height = H*dpr;
+  const g = cv.getContext('2d'); g.scale(dpr,dpr);
+  g.clearRect(0,0,W,H);
+  const padL=38, padR=10, padT=14, padB=26;
+  const midis = rows.map(r=>r.midi);
+  let lo = Math.min(...midis)-1, hi = Math.max(...midis)+1;
+  if (hi-lo < 12){ const c=(hi+lo)/2; lo=c-6; hi=c+6; }
+  const maxC = Math.max(20, Math.ceil(Math.max(...rows.map(r=>Math.abs(r.cents)))/10)*10);
+  const X = m => padL + (m-lo)/(hi-lo)*(W-padL-padR);
+  const Y = c => padT + (maxC-c)/(2*maxC)*(H-padT-padB);
+
+  g.strokeStyle='#262b33'; g.fillStyle='#9aa2ad'; g.font='10px ui-monospace,monospace';
+  for(const c of [maxC, maxC/2, 0, -maxC/2, -maxC]){
+    g.beginPath(); g.moveTo(padL, Y(c)); g.lineTo(W-padR, Y(c));
+    g.strokeStyle = c===0 ? '#4b5563' : '#1f242b'; g.stroke();
+    g.fillText((c>0?'+':'')+c, 4, Y(c)+3);
+  }
+  // faixa de tolerância
+  g.fillStyle='rgba(63,207,142,.08)';
+  g.fillRect(padL, Y(TOL()), W-padL-padR, Y(-TOL())-Y(TOL()));
+
+  // rótulos de oitava (C)
+  for(let m=Math.ceil(lo); m<=hi; m++){
+    if (((m%12)+12)%12 === 0){
+      g.strokeStyle='#1f242b'; g.beginPath(); g.moveTo(X(m),padT); g.lineTo(X(m),H-padB); g.stroke();
+      g.fillStyle='#9aa2ad'; g.fillText('C'+(Math.floor(m/12)-1), X(m)-6, H-10);
+    }
+  }
+  // linha + pontos
+  g.strokeStyle='rgba(122,162,247,.5)'; g.lineWidth=1.5; g.beginPath();
+  rows.slice().sort((a,b)=>a.midi-b.midi).forEach((r,i)=>{
+    i ? g.lineTo(X(r.midi), Y(r.cents)) : g.moveTo(X(r.midi), Y(r.cents));
+  });
+  g.stroke();
+  rows.forEach(r=>{
+    g.fillStyle = col(r.cents);
+    g.beginPath(); g.arc(X(r.midi), Y(r.cents), 3.6, 0, 7); g.fill();
+  });
+}
+
+$('copy').onclick = async ()=>{
+  const csv = ['nota;nome;hz;cents;tempo_s;duracao_s']
+    .concat(lastRows.map(r=>[r.name,r.latin,r.freq.toFixed(2),r.cents.toFixed(1),r.t.toFixed(2),r.dur.toFixed(2)].join(';')))
+    .join('\n');
+  try{ await navigator.clipboard.writeText(csv); $('copied').textContent='copiado'; }
+  catch(e){ $('copied').textContent='o navegador bloqueou a cópia'; }
+  setTimeout(()=>$('copied').textContent='',2500);
+};
+
+/* ---------- modo microfone ---------- */
+let micCtx=null, micStream=null, running=false, hist=[];
+$('micBtn').onclick = async ()=>{
+  if (running){ stopMic(); return; }
+  $('micMsg').textContent = 'pedindo acesso ao microfone…';
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({audio:{
+      echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
+  }catch(err){
+    $('micMsg').innerHTML = 'Microfone indisponível aqui (<b>'+(err.name||err)+'</b>). Dentro do Claude o frame bloqueia o microfone — baixe este arquivo .html e abra no Chrome do computador, ou use o modo Arquivo de áudio.';
+    return;
+  }
+  micCtx = new (window.AudioContext||window.webkitAudioContext)();
+  const src = micCtx.createMediaStreamSource(micStream);
+  const an = micCtx.createAnalyser();
+  an.fftSize = 4096;
+  src.connect(an);
+  const buf = new Float32Array(an.fftSize);
+  running = true; hist=[];
+  $('micBtn').textContent = 'Parar'; $('micBtn').classList.remove('primary');
+  $('micMsg').textContent = 'Toque uma tecla por vez. Leitura estabiliza em ~1s.';
+
+  (function loop(){
+    if(!running) return;
+    an.getFloatTimeDomainData(buf);
+    const p = detectPitch(buf, micCtx.sampleRate, 24, 2500);
+    if (p){
+      hist.push(p.freq); if (hist.length>8) hist.shift();
+      const s=[...hist].sort((a,b)=>a-b);
+      const f=s[Math.floor(s.length/2)];
+      const nn=noteOf(f, A4());
+      $('mNote').innerHTML = nn.name + '<small> ' + nn.latin + '</small>';
+      $('mHz').textContent = f.toFixed(2) + ' Hz';
+      $('mCents').textContent = (nn.cents>=0?'+':'') + nn.cents.toFixed(1);
+      $('mCents').className = 'big ' + cls(nn.cents);
+      const needle=$('needle');
+      needle.style.left = (50 + Math.max(-50,Math.min(50,nn.cents))) + '%';
+      needle.style.background = col(nn.cents);
+    } else {
+      hist=[]; $('mHz').textContent='aguardando som';
+    }
+    requestAnimationFrame(loop);
+  })();
+};
+function stopMic(){
+  running=false;
+  if(micStream) micStream.getTracks().forEach(t=>t.stop());
+  if(micCtx) micCtx.close();
+  micStream=micCtx=null;
+  $('micBtn').textContent='Ligar microfone'; $('micBtn').classList.add('primary');
+  $('mNote').innerHTML='—'; $('mHz').textContent='parado'; $('mCents').textContent='—';
+  $('needle').style.left='50%';
+}
+
+/* ---------- tabs ---------- */
+$('tabFile').onclick = ()=>{ $('tabFile').classList.add('on'); $('tabMic').classList.remove('on');
+  $('paneFile').classList.remove('hide'); $('paneMic').classList.add('hide'); };
+$('tabMic').onclick = ()=>{ $('tabMic').classList.add('on'); $('tabFile').classList.remove('on');
+  $('paneMic').classList.remove('hide'); $('paneFile').classList.add('hide'); };
+
+$('a4').onchange = $('tol').onchange = ()=>{ if(lastRows.length) render(lastRows); };
+window.addEventListener('resize', ()=> lastRows.length && drawChart(lastRows));
+</script>
+</body>
+</html>
